@@ -11,12 +11,23 @@
     "url": "git+https://github.com/Platiplus/platy_api.git"
   },
   "keywords": [
-    "api"
+    "api",
+    "mongodb",
+    "nodejs"
   ],
   "author": "Victor Rosa (Platiplus)",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/Platiplus/platy_api/issues"
   },
-  "homepage": "https://github.com/Platiplus/platy_api#readme"
+  "homepage": "https://github.com/Platiplus/platy_api#readme",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "mongoose": "^5.7.1"
+  },
+  "devDependencies": {
+    "standard": "^14.3.1"
+  }
 }
