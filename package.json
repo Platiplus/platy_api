@@ -1,0 +1,22 @@
+{
+  "name": "platy_api",
+  "version": "1.0.0",
+  "description": "A NodeJS/MongoDB powered API for web/mobile frontend use on the Platy project",
+  "main": "server.js",
+  "scripts": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Platiplus/platy_api.git"
+  },
+  "keywords": [
+    "api"
+  ],
+  "author": "Victor Rosa (Platiplus)",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Platiplus/platy_api/issues"
+  },
+  "homepage": "https://github.com/Platiplus/platy_api#readme"
+}
