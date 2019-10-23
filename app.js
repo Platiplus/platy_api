@@ -5,16 +5,22 @@ const express = require('express')
 const cors = require('cors')
 const app = express()
 
+// CONTROLLERS
+const userRoutes = require('./api/routes/user-routes')
+
 // MIDDLEWARES
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
 app.use(cors())
 
+app.use('/user', userRoutes)
+
 // DB CONNECTION
 mongoose.connect(
   `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PWD}@${process.env.DB_SRV}${process.env.DB_OPTIONS}`,
   {
-    useNewUrlParser: true
+    useNewUrlParser: true,
+    useUnifiedTopology: true
   }
 )
 
