@@ -1,10 +1,12 @@
 // DEPENDENCIES
-require('dotenv').config()
 const http = require('http')
 const app = require('./app')
+const path = require('path')
+
+const environment = require(path.join(__dirname, 'config', 'server-config.json')).development
 
 // PORT SELECTION
-const port = process.env.PORT || 8080
+const port = environment.port
 
 // SERVER CREATION
 const server = http.createServer(app)
