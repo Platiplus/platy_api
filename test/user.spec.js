@@ -19,6 +19,13 @@ chai.use(dirtyChai)
 
 // USER RELATED TESTS
 describe('User', () => {
+  const mockUser = {
+    username: casual.username,
+    email: casual.email,
+    password: casual.password,
+    initialBalance: Math.random() * (9999 - 1) + 1
+  }
+
   before(async () => {
     const db = new Database()
     await db.connect('test')
@@ -27,12 +34,6 @@ describe('User', () => {
 
   describe('/POST User Creation', () => {
     it('it should create an user', (done) => {
-      const mockUser = {
-        username: casual.username,
-        email: casual.email,
-        password: casual.password,
-        initialBalance: Math.random() * (9999 - 1) + 1
-      }
       chai.request(server)
         .post('/user/create')
         .send(mockUser)
@@ -46,20 +47,29 @@ describe('User', () => {
     })
     it('it should give an error when invalid input is provided', (done) => {
       const util = new Utils()
-      let mockUser = {
-        username: casual.username,
-        email: casual.email,
-        password: casual.password,
-        initialBalance: Math.random() * (9999 - 1) + 1
-      }
-      mockUser = util.chaoticInputGenerator(mockUser)
+      const entries = Object.entries(mockUser)
+      let user = Object.fromEntries(entries)
+
+      user = util.chaoticInputGenerator(user)
+      chai.request(server)
+        .post('/user/create')
+        .send(user)
+        .end((err, res) => {
+          expect(err).to.be.null()
+          expect(res).to.have.status(400)
+          expect(res.error).not.to.be.null()
+          done()
+        })
+    })
+    it('it should give an error when trying to create an user that already exists', (done) => {
       chai.request(server)
         .post('/user/create')
         .send(mockUser)
         .end((err, res) => {
           expect(err).to.be.null()
-          expect(res).to.have.status(422)
-          expect(res.error).not.to.be.null()
+          expect(res).to.have.status(409)
+          expect(res.body).to.be.a('object')
+          expect(res.body).to.have.property('message').equal('User Already Exists')
           done()
         })
     })
