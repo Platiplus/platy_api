@@ -2,6 +2,7 @@
 
 // UTILS AND MODELS
 const Database = require('../utils/Database')
+const Utils = require('../utils/Utils')
 const User = require('../api/models/user-model')
 
 // DEV DEPENDENCIES
@@ -40,6 +41,25 @@ describe('User', () => {
           expect(res).to.have.status(201)
           expect(res.body).to.be.a('object')
           expect(res.body).to.have.property('message').equal('User Created succesfully!')
+          done()
+        })
+    })
+    it('it should give an error when invalid input is provided', (done) => {
+      const util = new Utils()
+      let mockUser = {
+        username: casual.username,
+        email: casual.email,
+        password: casual.password,
+        initialBalance: Math.random() * (9999 - 1) + 1
+      }
+      mockUser = util.chaoticInputGenerator(mockUser)
+      chai.request(server)
+        .post('/user/create')
+        .send(mockUser)
+        .end((err, res) => {
+          expect(err).to.be.null()
+          expect(res).to.have.status(422)
+          expect(res.error).not.to.be.null()
           done()
         })
     })
