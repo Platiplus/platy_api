@@ -1,6 +1,6 @@
 // DEPENDENCIES
 const bodyParser = require('body-parser')
-const mongoose = require('mongoose')
+const Database = require('./utils/Database')
 const express = require('express')
 const cors = require('cors')
 const app = express()
@@ -16,13 +16,8 @@ app.use(cors())
 app.use('/user', userRoutes)
 
 // DB CONNECTION
-mongoose.connect(
-  `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PWD}@${process.env.DB_SRV}${process.env.DB_OPTIONS}`,
-  {
-    useNewUrlParser: true,
-    useUnifiedTopology: true
-  }
-)
+const db = new Database()
+db.connect('development')
 
 // ERROR 404 HANDLING
 app.use((request, response, next) => {

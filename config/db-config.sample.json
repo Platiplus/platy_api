@@ -1,0 +1,23 @@
+{
+  "development": {
+    "username": "username",
+    "password": "password",
+    "server": "sample-cluster.mongodb.net",
+    "database": "sampleDatabase",
+    "options": "option1=true&option2=false"
+  },
+  "test": {
+    "username": "username",
+    "password": "password",
+    "server": "sample-cluster.mongodb.net",
+    "database": "sampleDatabase",
+    "options": "option1=true&option2=false"
+  },
+  "production": {
+    "username": "username",
+    "password": "password",
+    "server": "sample-cluster.mongodb.net",
+    "database": "sampleDatabase",
+    "options": "option1=true&option2=false"
+  }
+}
