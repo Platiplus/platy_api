@@ -22,9 +22,14 @@
   },
   "homepage": "https://github.com/Platiplus/platy_api#readme",
   "dependencies": {
+    "bcrypt-nodejs": "0.0.3",
     "body-parser": "^1.19.0",
+    "celebrate": "^10.0.1",
     "cors": "^2.8.5",
+    "dotenv": "^8.2.0",
     "express": "^4.17.1",
+    "joi": "^14.3.1",
+    "jsonwebtoken": "^8.5.1",
     "mongoose": "^5.7.1"
   },
   "devDependencies": {
