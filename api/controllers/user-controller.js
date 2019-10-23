@@ -29,7 +29,7 @@ const create = async (request, response) => {
 
       response.status(201).json({ message: 'User Created succesfully!', data: createdUser })
     } else {
-      response.status(500).json({ error: true, message: 'User Already Exists' })
+      response.status(409).json({ error: true, message: 'User Already Exists' })
     }
   } catch (error) {
     response.status(500).json({ message: 'User was not created', error: error.message })
