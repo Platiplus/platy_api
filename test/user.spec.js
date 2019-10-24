@@ -45,7 +45,7 @@ describe('User', () => {
           done()
         })
     })
-    it('it should give an error when invalid input is provided', (done) => {
+    it('it should give an error when input with missing properties is provided', (done) => {
       const util = new Utils()
       const entries = Object.entries(mockUser)
       let user = Object.fromEntries(entries)

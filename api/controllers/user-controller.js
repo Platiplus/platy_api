@@ -32,10 +32,23 @@ const create = async (request, response) => {
       response.status(409).json({ error: true, message: 'User Already Exists' })
     }
   } catch (error) {
-    response.status(500).json({ message: 'User was not created', error: error.message })
+    response.status(500).json({ message: 'User was not created', error })
+  }
+}
+
+const find = async (request, response) => {
+  try {
+    const dbUser = request.params !== undefined
+      ? await User.find({})
+      : await User.findById({ _id: mongoose.Types.ObjectId(request.params.id) })
+
+    response.status(200).json({ error: false, data: dbUser })
+  } catch (error) {
+    response.status(500).json({ error })
   }
 }
 
 module.exports = {
-  create
+  create,
+  find
 }
