@@ -11,7 +11,8 @@ class Database {
       `mongodb+srv://${username}:${password}@${server}/${database}?${options}`,
       {
         useNewUrlParser: true,
-        useUnifiedTopology: true
+        useUnifiedTopology: true,
+        useFindAndModify: false
       }
     )
   }
