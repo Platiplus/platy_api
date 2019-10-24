@@ -1,6 +1,7 @@
 // DEPENDENCIES
 const bodyParser = require('body-parser')
 const Database = require('./utils/Database')
+const { errors } = require('celebrate')
 const express = require('express')
 const cors = require('cors')
 const app = express()
@@ -13,11 +14,15 @@ app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
 app.use(cors())
 
-app.use('/user', userRoutes)
-
 // DB CONNECTION
 const db = new Database()
 db.connect('development')
+
+// ROUTES
+app.use('/user', userRoutes)
+
+// ERROR HANDLING
+app.use(errors())
 
 // ERROR 404 HANDLING
 app.use((request, response, next) => {
