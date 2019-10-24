@@ -4,7 +4,7 @@
   "description": "A NodeJS/MongoDB powered API for web/mobile frontend use on the Platy project",
   "main": "server.js",
   "scripts": {
-    "test": "mocha --timeout 10000"
+    "test": "mocha --reporter mochawesome --timeout 10000"
   },
   "repository": {
     "type": "git",
@@ -37,6 +37,7 @@
     "chai-http": "^4.3.0",
     "dirty-chai": "^2.0.1",
     "mocha": "^6.2.2",
+    "mochawesome": "^4.1.0",
     "standard": "^14.3.1"
   }
 }

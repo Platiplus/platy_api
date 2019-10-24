@@ -1,3 +1,4 @@
 /node_modules/
 /config/db-config.json
 /config/server-config.json
+/mochawesome-report/
