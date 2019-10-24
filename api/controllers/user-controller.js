@@ -69,13 +69,8 @@ const remove = async (request, response) => {
 const update = async (request, response) => {
   try {
     const id = mongoose.Types.ObjectId(request.params.id)
-    const updateOps = {}
 
-    for (const ops of request.body) {
-      updateOps[ops.prop] = ops.value
-    }
-
-    const dbUser = await User.findByIdAndUpdate(id, updateOps)
+    const dbUser = await User.findByIdAndUpdate(id, request.body)
 
     if (!dbUser === null) {
       return response.status(404).json({ error: true, message: 'User not found on database' })
