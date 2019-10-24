@@ -19,7 +19,7 @@ const db = new Database()
 db.connect('development')
 
 // ROUTES
-app.use('/user', userRoutes)
+app.use('/users', userRoutes)
 
 // ERROR HANDLING
 app.use(errors())
