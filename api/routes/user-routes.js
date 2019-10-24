@@ -4,7 +4,9 @@ const router = express.Router()
 const controller = require('../controllers/user-controller')
 const model = require('../models/validation-model')
 
-router.post('/create', celebrate(model.userCreationModel), controller.create)
-router.get('/find/:id?', celebrate(model.userFindModel), controller.find)
+router.post('/', celebrate(model.userCreateModel), controller.create)
+router.get('/:id?', celebrate(model.userReadModel), controller.read)
+router.patch('/:id', celebrate(model.userUpdateModel), controller.update)
+router.delete('/:id', celebrate(model.userDeleteModel), controller.remove)
 
 module.exports = router

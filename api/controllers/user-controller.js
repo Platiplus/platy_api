@@ -36,11 +36,15 @@ const create = async (request, response) => {
   }
 }
 
-const find = async (request, response) => {
+const read = async (request, response) => {
   try {
-    const dbUser = request.params !== undefined
+    const dbUser = request.params.id === undefined
       ? await User.find({})
-      : await User.findById({ _id: mongoose.Types.ObjectId(request.params.id) })
+      : await User.findById(mongoose.Types.ObjectId(request.params.id))
+
+    if (!dbUser === null) {
+      return response.status(404).json({ error: true, message: 'User not found on database' })
+    }
 
     response.status(200).json({ error: false, data: dbUser })
   } catch (error) {
@@ -48,7 +52,44 @@ const find = async (request, response) => {
   }
 }
 
+const remove = async (request, response) => {
+  try {
+    const dbUser = await User.findByIdAndDelete(mongoose.Types.ObjectId(request.params.id))
+
+    if (!dbUser === null) {
+      return response.status(404).json({ error: true, message: 'User not found on database' })
+    }
+
+    response.status(204).send()
+  } catch (error) {
+    response.status(500).json({ error: true, message: error.message })
+  }
+}
+
+const update = async (request, response) => {
+  try {
+    const id = mongoose.Types.ObjectId(request.params.id)
+    const updateOps = {}
+
+    for (const ops of request.body) {
+      updateOps[ops.prop] = ops.value
+    }
+
+    const dbUser = await User.findByIdAndUpdate(id, updateOps)
+
+    if (!dbUser === null) {
+      return response.status(404).json({ error: true, message: 'User not found on database' })
+    }
+
+    response.status(200).json({ error: false, data: dbUser })
+  } catch (error) {
+    response.status(500).json({ error: true, message: error.message })
+  }
+}
+
 module.exports = {
   create,
-  find
+  read,
+  update,
+  remove
 }
