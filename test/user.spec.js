@@ -25,6 +25,7 @@ describe('User', () => {
     password: casual.password,
     initialBalance: Math.random() * (9999 - 1) + 1
   }
+  let registeredUser
 
   before(async () => {
     const db = new Database()
@@ -32,12 +33,13 @@ describe('User', () => {
     await User.deleteMany({})
   })
 
-  describe('/POST User Creation', () => {
+  describe('/POST /users/', () => {
     it('it should create an user', (done) => {
       chai.request(server)
-        .post('/user/create')
+        .post('/users/')
         .send(mockUser)
         .end((err, res) => {
+          registeredUser = res.body.data
           expect(err).to.be.null()
           expect(res).to.have.status(201)
           expect(res.body).to.be.a('object')
@@ -45,14 +47,14 @@ describe('User', () => {
           done()
         })
     })
-    it('it should give an error when input with missing properties is provided', (done) => {
+    it('it should fail when input with missing properties is provided', (done) => {
       const util = new Utils()
       const entries = Object.entries(mockUser)
       let user = Object.fromEntries(entries)
 
       user = util.chaoticInputGenerator(user)
       chai.request(server)
-        .post('/user/create')
+        .post('/users/')
         .send(user)
         .end((err, res) => {
           expect(err).to.be.null()
@@ -61,15 +63,73 @@ describe('User', () => {
           done()
         })
     })
-    it('it should give an error when trying to create an user that already exists', (done) => {
+    it('it should fail when trying to create an user that already exists', (done) => {
       chai.request(server)
-        .post('/user/create')
+        .post('/users/')
         .send(mockUser)
         .end((err, res) => {
           expect(err).to.be.null()
           expect(res).to.have.status(409)
           expect(res.body).to.be.a('object')
           expect(res.body).to.have.property('message').equal('User Already Exists')
+          done()
+        })
+    })
+  })
+  describe('/GET /user/:id?', () => {
+    it('it should find a collection of users', (done) => {
+      chai.request(server)
+        .get('/users/')
+        .end((err, res) => {
+          expect(err).to.be.null()
+          expect(res).to.have.status(200)
+          expect(res.body).to.be.a('object')
+          expect(res.body.data).to.be.an('array')
+          expect(res.body.error).to.be.false()
+          done()
+        })
+    })
+    it('it should find an specific user', (done) => {
+      chai.request(server)
+        .get(`/users/${registeredUser._id}`)
+        .end((err, res) => {
+          expect(err).to.be.null()
+          expect(res).to.have.status(200)
+          expect(res.body).to.be.a('object')
+          expect(res.body.data).to.be.an('object')
+          expect(res.body.error).to.be.false()
+          done()
+        })
+    })
+    it('it should fail if ObjectId is invalid', (done) => {
+      chai.request(server)
+        .get('/users/invalidObjectId')
+        .end((err, res) => {
+          expect(err).to.be.null()
+          expect(res).to.have.status(400)
+          expect(res.error).not.to.be.null()
+          done()
+        })
+    })
+  })
+  describe('/DELETE /user/id', () => {
+    it('it should delete an user from the database', (done) => {
+      chai.request(server)
+        .delete(`/users/${registeredUser._id}`)
+        .end((err, res) => {
+          expect(err).to.be.null()
+          expect(res).to.have.status(204)
+          done()
+        })
+    })
+    it('it should fail to delete an user that does not exists on the database', (done) => {
+      chai.request(server)
+        .delete(`/users/${registeredUser._id}`)
+        .end((err, res) => {
+          expect(err).to.be.null()
+          expect(res).to.have.status(404)
+          expect(res.body).to.be.a('object')
+          expect(res.body).to.have.property('message').equal('User not found on database')
           done()
         })
     })
