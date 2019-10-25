@@ -56,7 +56,7 @@ const remove = async (request, response) => {
   try {
     const dbUser = await User.findByIdAndDelete(mongoose.Types.ObjectId(request.params.id))
 
-    if (!dbUser === null) {
+    if (!dbUser) {
       return response.status(404).json({ error: true, message: 'User not found on database' })
     }
 

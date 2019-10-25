@@ -101,7 +101,7 @@ describe('User', () => {
           done()
         })
     })
-    it('it should fail if ObjectId is invalid', (done) => {
+    it('it should fail to find an user if ObjectId is invalid', (done) => {
       chai.request(server)
         .get('/users/invalidObjectId')
         .end((err, res) => {
@@ -130,6 +130,16 @@ describe('User', () => {
           expect(res).to.have.status(404)
           expect(res.body).to.be.a('object')
           expect(res.body).to.have.property('message').equal('User not found on database')
+          done()
+        })
+    })
+    it('it should fail to delete if ObjectId is invalid', (done) => {
+      chai.request(server)
+        .delete('/users/invalidObjectId')
+        .end((err, res) => {
+          expect(err).to.be.null()
+          expect(res).to.have.status(400)
+          expect(res.error).not.to.be.null()
           done()
         })
     })
