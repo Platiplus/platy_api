@@ -17,6 +17,12 @@ const schemas = {
   userUpdateModel: {
     params: Joi.object().keys({
       id: Joi.string().regex(/^[0-9a-fA-F]{24}$/).required()
+    }),
+    body: Joi.object().keys({
+      username: Joi.string(),
+      password: Joi.string(),
+      email: Joi.string().email(),
+      initialBalance: Joi.number()
     })
   },
   userDeleteModel: {
