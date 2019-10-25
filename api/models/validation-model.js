@@ -18,7 +18,7 @@ const schemas = {
     params: Joi.object().keys({
       id: Joi.string().regex(/^[0-9a-fA-F]{24}$/).required()
     }),
-    body: Joi.object().keys({
+    body: Joi.object().min(1).keys({
       username: Joi.string(),
       password: Joi.string(),
       email: Joi.string().email(),

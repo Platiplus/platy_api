@@ -4,6 +4,7 @@
 const Database = require('../utils/Database')
 const Utils = require('../utils/Utils')
 const User = require('../api/models/user-model')
+const mongoose = require('mongoose')
 
 // DEV DEPENDENCIES
 const casual = require('casual')
@@ -101,9 +102,79 @@ describe('User', () => {
           done()
         })
     })
+    it('it should fail to find an user that does not exists on the database', (done) => {
+      chai.request(server)
+        .get(`/users/${mongoose.Types.ObjectId()}`)
+        .end((err, res) => {
+          expect(err).to.be.null()
+          expect(res).to.have.status(404)
+          expect(res.body).to.be.a('object')
+          expect(res.body).to.have.property('message').equal('User not found on database')
+          done()
+        })
+    })
     it('it should fail to find an user if ObjectId is invalid', (done) => {
       chai.request(server)
         .get('/users/invalidObjectId')
+        .end((err, res) => {
+          expect(err).to.be.null()
+          expect(res).to.have.status(400)
+          expect(res.error).not.to.be.null()
+          done()
+        })
+    })
+  })
+  describe('/PATCH /user/id', () => {
+    it('it should patch an specific user', (done) => {
+      chai.request(server)
+        .patch(`/users/${registeredUser._id}`)
+        .send({ username: 'test' })
+        .end((err, res) => {
+          expect(err).to.be.null()
+          expect(res).to.have.status(200)
+          expect(res.body).to.be.a('object')
+          expect(res.body.data).to.be.an('object')
+          expect(res.body.error).to.be.false()
+          done()
+        })
+    })
+    it('it should fail to patch an user that does not exists on the database', (done) => {
+      chai.request(server)
+        .patch(`/users/${mongoose.Types.ObjectId()}`)
+        .send({ username: 'test' })
+        .end((err, res) => {
+          expect(err).to.be.null()
+          expect(res).to.have.status(404)
+          expect(res.body).to.be.a('object')
+          expect(res.body).to.have.property('message').equal('User not found on database')
+          done()
+        })
+    })
+    it('it should fail to patch an user if there are no properties on the request', (done) => {
+      chai.request(server)
+        .patch(`/users/${registeredUser._id}`)
+        .send({})
+        .end((err, res) => {
+          expect(err).to.be.null()
+          expect(res).to.have.status(400)
+          expect(res.error).not.to.be.null()
+          done()
+        })
+    })
+    it('it should fail to patch an user if there are unknow properties on the request', (done) => {
+      chai.request(server)
+        .patch(`/users/${registeredUser._id}`)
+        .send({ malicious_property: 'hackerman' })
+        .end((err, res) => {
+          expect(err).to.be.null()
+          expect(res).to.have.status(400)
+          expect(res.error).not.to.be.null()
+          done()
+        })
+    })
+    it('it should fail to patch if ObjectId is invalid', (done) => {
+      chai.request(server)
+        .patch('/users/invalidObjectId')
         .end((err, res) => {
           expect(err).to.be.null()
           expect(res).to.have.status(400)
@@ -124,7 +195,7 @@ describe('User', () => {
     })
     it('it should fail to delete an user that does not exists on the database', (done) => {
       chai.request(server)
-        .delete(`/users/${registeredUser._id}`)
+        .delete(`/users/${mongoose.Types.ObjectId()}`)
         .end((err, res) => {
           expect(err).to.be.null()
           expect(res).to.have.status(404)
