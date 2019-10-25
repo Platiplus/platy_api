@@ -42,7 +42,7 @@ const read = async (request, response) => {
       ? await User.find({})
       : await User.findById(mongoose.Types.ObjectId(request.params.id))
 
-    if (!dbUser === null) {
+    if (!dbUser) {
       return response.status(404).json({ error: true, message: 'User not found on database' })
     }
 
@@ -72,7 +72,7 @@ const update = async (request, response) => {
 
     const dbUser = await User.findByIdAndUpdate(id, request.body)
 
-    if (!dbUser === null) {
+    if (!dbUser) {
       return response.status(404).json({ error: true, message: 'User not found on database' })
     }
 
