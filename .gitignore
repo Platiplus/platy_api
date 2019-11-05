@@ -1,6 +1,4 @@
 /node_modules/
-/config/db-config.js
-/config/server-config.js
 /mochawesome-report/
 /.nyc_output/
 /coverage/
