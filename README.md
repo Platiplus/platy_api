@@ -32,7 +32,7 @@ Add your environment variables on a ```.env``` file using the examples on ```.ex
 
 Run the command ``` node server.js ```.
 
-The API should be running in http://localhost:{YOUR PORT} and it is ready to process incoming requests..
+The API should be running in http://localhost:{YOURPORT} and it is ready to process incoming requests..
 
 ## Built With
 

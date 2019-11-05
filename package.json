@@ -4,7 +4,7 @@
   "description": "A NodeJS/MongoDB powered API for web/mobile frontend use on the Platy project",
   "main": "server.js",
   "scripts": {
-    "test": "nyc --reporter lcovonly mocha --exit && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js"
+    "test": "nyc --reporter lcovonly mocha --timeout 10000 --exit && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js"
   },
   "repository": {
     "type": "git",

@@ -3,10 +3,10 @@ const mongoose = require('mongoose')
 
 // DATABASE CONNECTION FACTORY
 class Database {
-  connect (environment) {
+  connect (environment = 'development') {
     const { username, password, server, database, options } = require('../config/db-config')[environment]
 
-    mongoose.connect(
+    return mongoose.connect(
       `mongodb+srv://${username}:${password}@${server}/${database}?${options}`,
       {
         useNewUrlParser: true,
