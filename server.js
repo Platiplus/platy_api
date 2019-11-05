@@ -1,9 +1,10 @@
 // DEPENDENCIES
+require('dotenv').config()
+
 const http = require('http')
 const app = require('./app')
-const path = require('path')
 
-const environment = require(path.join(__dirname, 'config', 'server-config.json')).development
+const environment = require('./config/server-config').development
 
 // PORT SELECTION
 const port = environment.port

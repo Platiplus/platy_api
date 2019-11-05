@@ -1,4 +1,8 @@
 /node_modules/
-/config/db-config.json
-/config/server-config.json
+/config/db-config.js
+/config/server-config.js
 /mochawesome-report/
+/.nyc_output/
+/coverage/
+.env
+.coveralls.yml

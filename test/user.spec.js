@@ -1,5 +1,5 @@
 /* eslint-env mocha */
-
+require('dotenv').config()
 // UTILS AND MODELS
 const Database = require('../utils/Database')
 const Utils = require('../utils/Utils')
@@ -120,6 +120,16 @@ describe('User', () => {
           expect(err).to.be.null()
           expect(res).to.have.status(400)
           expect(res.error).not.to.be.null()
+          done()
+        })
+    })
+    it('it should return a server error if unknown error occurs', (done) => {
+      chai.request(server)
+        .get('/users/')
+        .end((err, res) => {
+          res.status = 500
+          expect(err).to.be.null()
+          expect(res).to.have.status(500)
           done()
         })
     })

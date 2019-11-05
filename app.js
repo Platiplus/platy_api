@@ -26,11 +26,12 @@ app.use(errors())
 
 // ERROR 404 HANDLING
 app.use((request, response, next) => {
-  const error = new Error('Route not found')
-  error.status = 404
+  const error = {
+    message: 'Route Not Found',
+    status: 404
+  }
   next(error)
 })
-
 // GENERIC ERROR HANDLING
 app.use((error, request, response, next) => {
   response.status(error.status || 500)
