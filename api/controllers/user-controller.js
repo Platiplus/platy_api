@@ -96,10 +96,6 @@ const readAll = async (request, response) => {
   try {
     const dbUser = await User.find({})
 
-    if (!dbUser) {
-      return response.status(404).json({ error: true, message: 'User not found on database' })
-    }
-
     const data = {
       count: dbUser.length,
       users: dbUser.map((user) => {
@@ -128,7 +124,7 @@ const readAll = async (request, response) => {
 
     response.status(200).json(data)
   } catch (error) {
-    response.status(500).json({ error })
+    response.status(500).json({ error: true, message: error.message })
   }
 }
 
