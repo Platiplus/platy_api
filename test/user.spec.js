@@ -123,16 +123,6 @@ describe('User', () => {
           done()
         })
     })
-    it('it should return a server error if unknown error occurs', (done) => {
-      chai.request(server)
-        .get('/users/')
-        .end((err, res) => {
-          res.status = 500
-          expect(err).to.be.null()
-          expect(res).to.have.status(500)
-          done()
-        })
-    })
   })
   describe('/PATCH /user/id', () => {
     it('it should patch an specific user', (done) => {
