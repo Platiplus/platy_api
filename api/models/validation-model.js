@@ -9,9 +9,9 @@ const schemas = {
       initialBalance: Joi.number().required()
     })
   },
-  userReadModel: {
+  userReadOneModel: {
     params: Joi.object().keys({
-      id: Joi.string().regex(/^[0-9a-fA-F]{24}$/)
+      id: Joi.string().regex(/^[0-9a-fA-F]{24}$/).required()
     })
   },
   userUpdateModel: {

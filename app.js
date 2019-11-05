@@ -13,10 +13,10 @@ const userRoutes = require('./api/routes/user-routes')
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
 app.use(cors())
+app.disable('x-powered-by')
 
 // DB CONNECTION
 const db = new Database()
-console.log(typeof (db))
 db.connect(process.env.DB_TEST_DATABASE)
 
 // ROUTES

@@ -5,7 +5,8 @@ const controller = require('../controllers/user-controller')
 const model = require('../models/validation-model')
 
 router.post('/', celebrate(model.userCreateModel), controller.create)
-router.get('/:id?', celebrate(model.userReadModel), controller.read)
+router.get('/', controller.readAll)
+router.get('/:id', celebrate(model.userReadOneModel), controller.readOne)
 router.patch('/:id', celebrate(model.userUpdateModel), controller.update)
 router.delete('/:id', celebrate(model.userDeleteModel), controller.remove)
 

@@ -40,11 +40,11 @@ describe('User', () => {
         .post('/users/')
         .send(mockUser)
         .end((err, res) => {
-          registeredUser = res.body.data
+          registeredUser = res.body.createdUser
           expect(err).to.be.null()
           expect(res).to.have.status(201)
           expect(res.body).to.be.a('object')
-          expect(res.body).to.have.property('message').equal('User Created succesfully!')
+          expect(res.body).to.have.property('message').equal('User created succesfully!')
           done()
         })
     })
@@ -77,7 +77,7 @@ describe('User', () => {
         })
     })
   })
-  describe('/GET /user/:id?', () => {
+  describe('/GET /users/', () => {
     it('it should find a collection of users', (done) => {
       chai.request(server)
         .get('/users/')
@@ -85,11 +85,12 @@ describe('User', () => {
           expect(err).to.be.null()
           expect(res).to.have.status(200)
           expect(res.body).to.be.a('object')
-          expect(res.body.data).to.be.an('array')
-          expect(res.body.error).to.be.false()
+          expect(res.body.users).to.be.an('array')
           done()
         })
     })
+  })
+  describe('/GET /users/:id', () => {
     it('it should find an specific user', (done) => {
       chai.request(server)
         .get(`/users/${registeredUser._id}`)
@@ -97,8 +98,7 @@ describe('User', () => {
           expect(err).to.be.null()
           expect(res).to.have.status(200)
           expect(res.body).to.be.a('object')
-          expect(res.body.data).to.be.an('object')
-          expect(res.body.error).to.be.false()
+          expect(res.body.user).to.be.an('object')
           done()
         })
     })
@@ -124,7 +124,7 @@ describe('User', () => {
         })
     })
   })
-  describe('/PATCH /user/id', () => {
+  describe('/PATCH /user/:id', () => {
     it('it should patch an specific user', (done) => {
       chai.request(server)
         .patch(`/users/${registeredUser._id}`)
@@ -133,8 +133,7 @@ describe('User', () => {
           expect(err).to.be.null()
           expect(res).to.have.status(200)
           expect(res.body).to.be.a('object')
-          expect(res.body.data).to.be.an('object')
-          expect(res.body.error).to.be.false()
+          expect(res.body.user).to.be.an('object')
           done()
         })
     })
@@ -183,13 +182,15 @@ describe('User', () => {
         })
     })
   })
-  describe('/DELETE /user/id', () => {
+  describe('/DELETE /user/:id', () => {
     it('it should delete an user from the database', (done) => {
       chai.request(server)
         .delete(`/users/${registeredUser._id}`)
         .end((err, res) => {
           expect(err).to.be.null()
-          expect(res).to.have.status(204)
+          expect(res).to.have.status(200)
+          expect(res.body).to.be.a('object')
+          expect(res.body).to.have.property('message').equal('User deleted successfully')
           done()
         })
     })

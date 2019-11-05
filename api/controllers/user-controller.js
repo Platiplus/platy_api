@@ -27,7 +27,30 @@ const create = async (request, response) => {
 
       const createdUser = await user.save()
 
-      response.status(201).json({ message: 'User Created succesfully!', data: createdUser })
+      const data = {
+        message: 'User created succesfully!',
+        createdUser: {
+          _id: createdUser._id,
+          username: createdUser.username,
+          email: createdUser.email,
+          initialBalance: createdUser.initialBalance,
+          requests: [
+            {
+              type: 'GET',
+              url: `${process.env.API_URL}/users/${createdUser._id}`
+            },
+            {
+              type: 'PATCH',
+              url: `${process.env.API_URL}/users/${createdUser._id}`
+            },
+            {
+              type: 'DELETE',
+              url: `${process.env.API_URL}/users/${createdUser._id}`
+            }
+          ]
+        }
+      }
+      response.status(201).json(data)
     } else {
       response.status(409).json({ error: true, message: 'User Already Exists' })
     }
@@ -36,17 +59,74 @@ const create = async (request, response) => {
   }
 }
 
-const read = async (request, response) => {
+const readOne = async (request, response) => {
   try {
-    const dbUser = request.params.id === undefined
-      ? await User.find({})
-      : await User.findById(mongoose.Types.ObjectId(request.params.id))
+    const dbUser = await User.findById(mongoose.Types.ObjectId(request.params.id))
 
     if (!dbUser) {
       return response.status(404).json({ error: true, message: 'User not found on database' })
     }
 
-    response.status(200).json({ error: false, data: dbUser })
+    const data = {
+      user: {
+        _id: dbUser._id,
+        username: dbUser.username,
+        email: dbUser.email,
+        initialBalance: dbUser.initialBalance,
+        requests: [
+          {
+            type: 'PATCH',
+            url: `${process.env.API_URL}/users/${dbUser._id}`
+          },
+          {
+            type: 'DELETE',
+            url: `${process.env.API_URL}/users/${dbUser._id}`
+          }
+        ]
+      }
+    }
+
+    response.status(200).json(data)
+  } catch (error) {
+    response.status(500).json({ error })
+  }
+}
+
+const readAll = async (request, response) => {
+  try {
+    const dbUser = await User.find({})
+
+    if (!dbUser) {
+      return response.status(404).json({ error: true, message: 'User not found on database' })
+    }
+
+    const data = {
+      count: dbUser.length,
+      users: dbUser.map((user) => {
+        return {
+          _id: user._id,
+          username: user.username,
+          email: user.email,
+          initialBalance: user.initialBalance,
+          requests: [
+            {
+              type: 'GET',
+              url: `${process.env.API_URL}/users/${user._id}`
+            },
+            {
+              type: 'PATCH',
+              url: `${process.env.API_URL}/users/${user._id}`
+            },
+            {
+              type: 'DELETE',
+              url: `${process.env.API_URL}/users/${user._id}`
+            }
+          ]
+        }
+      })
+    }
+
+    response.status(200).json(data)
   } catch (error) {
     response.status(500).json({ error })
   }
@@ -60,7 +140,17 @@ const remove = async (request, response) => {
       return response.status(404).json({ error: true, message: 'User not found on database' })
     }
 
-    response.status(204).send()
+    const data = {
+      message: 'User deleted successfully',
+      requests: [
+        {
+          type: 'POST',
+          url: `${process.env.API_URL}/users/`,
+          data: { email: 'String', username: 'String', initialBalance: 'Number', password: 'String' }
+        }
+      ]
+    }
+    response.status(200).json(data)
   } catch (error) {
     response.status(500).json({ error: true, message: error.message })
   }
@@ -76,7 +166,26 @@ const update = async (request, response) => {
       return response.status(404).json({ error: true, message: 'User not found on database' })
     }
 
-    response.status(200).json({ error: false, data: dbUser })
+    const data = {
+      user: {
+        _id: dbUser._id,
+        username: dbUser.username,
+        email: dbUser.email,
+        initialBalance: dbUser.initialBalance,
+        requests: [
+          {
+            type: 'GET',
+            url: `${process.env.API_URL}/users/${dbUser._id}`
+          },
+          {
+            type: 'DELETE',
+            url: `${process.env.API_URL}/users/${dbUser._id}`
+          }
+        ]
+      }
+    }
+
+    response.status(200).json(data)
   } catch (error) {
     response.status(500).json({ error: true, message: error.message })
   }
@@ -84,7 +193,8 @@ const update = async (request, response) => {
 
 module.exports = {
   create,
-  read,
+  readOne,
+  readAll,
   update,
   remove
 }
