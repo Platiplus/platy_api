@@ -41,7 +41,8 @@ const create = async (request, response) => {
             },
             {
               type: 'PATCH',
-              url: `${process.env.API_URL}/users/${createdUser._id}`
+              url: `${process.env.API_URL}/users/${createdUser._id}`,
+              data: { email: 'String?', username: 'String?', initialBalance: 'Number?', password: 'String?' }
             },
             {
               type: 'DELETE',
@@ -76,7 +77,8 @@ const readOne = async (request, response) => {
         requests: [
           {
             type: 'PATCH',
-            url: `${process.env.API_URL}/users/${dbUser._id}`
+            url: `${process.env.API_URL}/users/${dbUser._id}`,
+            data: { email: 'String?', username: 'String?', initialBalance: 'Number?', password: 'String?' }
           },
           {
             type: 'DELETE',
@@ -111,7 +113,8 @@ const readAll = async (request, response) => {
             },
             {
               type: 'PATCH',
-              url: `${process.env.API_URL}/users/${user._id}`
+              url: `${process.env.API_URL}/users/${user._id}`,
+              data: { email: 'String?', username: 'String?', initialBalance: 'Number?', password: 'String?' }
             },
             {
               type: 'DELETE',
