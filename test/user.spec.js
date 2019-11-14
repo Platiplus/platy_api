@@ -91,7 +91,7 @@ describe('User', () => {
     })
   })
   describe('/GET /users/:id', () => {
-    it('it should find an specific user', (done) => {
+    it('it should find a specific user', (done) => {
       chai.request(server)
         .get(`/users/${registeredUser._id}`)
         .end((err, res) => {
@@ -125,7 +125,7 @@ describe('User', () => {
     })
   })
   describe('/PATCH /user/:id', () => {
-    it('it should patch an specific user', (done) => {
+    it('it should patch a specific user', (done) => {
       chai.request(server)
         .patch(`/users/${registeredUser._id}`)
         .send({ username: 'test' })
