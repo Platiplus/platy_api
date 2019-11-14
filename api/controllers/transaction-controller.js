@@ -1,0 +1,231 @@
+// DEPENDENCIES
+const mongoose = require('mongoose')
+const Utils = require('../../utils/Utils')
+const utils = new Utils()
+
+// MODEL IMPORTING
+const Transaction = require('../models/transaction-model')
+
+// CREATE A NEW USER ON THE DATABASE
+const create = async (request, response) => {
+  try {
+    const { type, date, description, target, value, category, status } = request.body
+    // @TODO Owner id should come from jwt token
+    const owner = request.params.userId
+
+    const parsedDate = utils.normalizeDate(date)
+
+    if (parsedDate === undefined) {
+      return response.status(400).json({ error: 'Invalid date provided', message: 'Transaction was not created' })
+    }
+
+    const transaction = new Transaction({
+      _id: mongoose.Types.ObjectId(),
+      type,
+      date: parsedDate,
+      description,
+      target,
+      value,
+      category,
+      status,
+      owner: mongoose.Types.ObjectId(owner)
+    })
+
+    const createdTransaction = await transaction.save()
+
+    const data = {
+      message: 'Transaction created succesfully!',
+      createdTransaction: {
+        _id: createdTransaction._id,
+        type: createdTransaction.type,
+        date: createdTransaction.date,
+        description: createdTransaction.description,
+        target: createdTransaction.target,
+        value: createdTransaction.value,
+        category: createdTransaction.category,
+        status: createdTransaction.status,
+        owner: createdTransaction.owner,
+        requests: [
+          {
+            type: 'GET',
+            url: `${process.env.API_URL}/transactions/${createdTransaction._id}`
+          },
+          {
+            type: 'PATCH',
+            url: `${process.env.API_URL}/transactions/${createdTransaction._id}`,
+            data: { type: 'Number?', date: 'String?', description: 'String?', target: 'String?', value: 'Number?', category: 'String?', status: 'Boolean?', owner: 'String' }
+          },
+          {
+            type: 'DELETE',
+            url: `${process.env.API_URL}/transactions/${createdTransaction._id}`
+          }
+        ]
+      }
+    }
+    response.status(201).json(data)
+  } catch (error) {
+    response.status(500).json({ message: 'Transaction was not created', error })
+  }
+}
+
+const readOne = async (request, response) => {
+  try {
+    const dbTransaction = await Transaction.findById(mongoose.Types.ObjectId(request.params.id))
+
+    if (!dbTransaction) {
+      return response.status(404).json({ error: true, message: 'Transaction not found on database' })
+    }
+
+    const data = {
+      transaction: {
+        _id: dbTransaction._id,
+        type: dbTransaction.type,
+        date: dbTransaction.date,
+        description: dbTransaction.description,
+        target: dbTransaction.target,
+        value: dbTransaction.value,
+        category: dbTransaction.category,
+        status: dbTransaction.status,
+        owner: dbTransaction.owner,
+        requests: [
+          {
+            type: 'PATCH',
+            url: `${process.env.API_URL}/transactions/${dbTransaction._id}`,
+            data: { type: 'Number?', date: 'String?', description: 'String?', target: 'String?', value: 'Number?', category: 'String?', status: 'Boolean?', owner: 'String' }
+          },
+          {
+            type: 'DELETE',
+            url: `${process.env.API_URL}/transactions/${dbTransaction._id}`
+          }
+        ]
+      }
+    }
+
+    response.status(200).json(data)
+  } catch (error) {
+    response.status(500).json({ error })
+  }
+}
+
+const readAll = async (request, response) => {
+  try {
+    // @TODO Owner id should come from jwt token
+    const dbTransaction = await Transaction.find({ owner: request.params.userId })
+
+    const data = {
+      count: dbTransaction.length,
+      transactions: dbTransaction.map((transaction) => {
+        return {
+          _id: transaction._id,
+          type: transaction.type,
+          date: transaction.date,
+          description: transaction.description,
+          target: transaction.target,
+          value: transaction.value,
+          category: transaction.category,
+          status: transaction.status,
+          owner: transaction.owner,
+          requests: [
+            {
+              type: 'GET',
+              url: `${process.env.API_URL}/transactions/${transaction._id}`
+            },
+            {
+              type: 'PATCH',
+              url: `${process.env.API_URL}/transactions/${transaction._id}`,
+              data: { type: 'Number?', date: 'String?', description: 'String?', target: 'String?', value: 'Number?', category: 'String?', status: 'Boolean?', owner: 'String' }
+            },
+            {
+              type: 'DELETE',
+              url: `${process.env.API_URL}/transactions/${transaction._id}`
+            }
+          ]
+        }
+      })
+    }
+
+    response.status(200).json(data)
+  } catch (error) {
+    response.status(500).json({ error: true, message: error.message })
+  }
+}
+
+const remove = async (request, response) => {
+  try {
+    const dbTransaction = await Transaction.findByIdAndDelete(mongoose.Types.ObjectId(request.params.id))
+
+    if (!dbTransaction) {
+      return response.status(404).json({ error: true, message: 'Transaction not found on database' })
+    }
+
+    const data = {
+      message: 'Transaction deleted successfully',
+      requests: [
+        {
+          type: 'POST',
+          url: `${process.env.API_URL}/transactions/`,
+          data: { type: 'Number', date: 'String', description: 'String', target: 'String', value: 'Number', category: 'String', status: 'Boolean', owner: 'String' }
+        }
+      ]
+    }
+    response.status(200).json(data)
+  } catch (error) {
+    response.status(500).json({ error: true, message: error.message })
+  }
+}
+
+const update = async (request, response) => {
+  try {
+    const id = mongoose.Types.ObjectId(request.params.id)
+
+    const parsedDate = utils.normalizeDate(request.body.date)
+
+    if (request.body.date !== undefined && parsedDate === undefined) {
+      return response.status(400).json({ error: true, message: 'Invalid date provided' })
+    }
+
+    request.body.date = parsedDate
+
+    const dbTransaction = await Transaction.findByIdAndUpdate(id, request.body)
+
+    if (!dbTransaction) {
+      return response.status(404).json({ error: true, message: 'Transaction not found on database' })
+    }
+
+    const data = {
+      transaction: {
+        _id: dbTransaction._id,
+        type: dbTransaction.type,
+        date: dbTransaction.date,
+        description: dbTransaction.description,
+        target: dbTransaction.target,
+        value: dbTransaction.value,
+        category: dbTransaction.category,
+        status: dbTransaction.status,
+        owner: dbTransaction.owner,
+        requests: [
+          {
+            type: 'GET',
+            url: `${process.env.API_URL}/transactions/${dbTransaction._id}`
+          },
+          {
+            type: 'DELETE',
+            url: `${process.env.API_URL}/transactions/${dbTransaction._id}`
+          }
+        ]
+      }
+    }
+
+    response.status(200).json(data)
+  } catch (error) {
+    response.status(500).json({ error: true, message: error.message })
+  }
+}
+
+module.exports = {
+  create,
+  readOne,
+  readAll,
+  update,
+  remove
+}

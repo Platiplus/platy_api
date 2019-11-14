@@ -8,6 +8,7 @@ const app = express()
 
 // CONTROLLERS
 const userRoutes = require('./api/routes/user-routes')
+const transactionRoutes = require('./api/routes/transaction-routes')
 
 // MIDDLEWARES
 app.use(bodyParser.urlencoded({ extended: false }))
@@ -21,6 +22,7 @@ db.connect(process.env.DB_TEST_DATABASE)
 
 // ROUTES
 app.use('/users', userRoutes)
+app.use('/transactions', transactionRoutes)
 
 // CELEBRATE ERROR HANDLING
 app.use(errors())
