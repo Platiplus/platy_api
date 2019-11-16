@@ -49,6 +49,11 @@ const schemas = {
       id: Joi.string().regex(/^[0-9a-fA-F]{24}$/).required()
     })
   },
+  transactionReadAllModel: {
+    params: Joi.object().keys({
+      userId: Joi.string().regex(/^[0-9a-fA-F]{24}$/).required()
+    })
+  },
   transactionUpdateModel: {
     params: Joi.object().keys({
       id: Joi.string().regex(/^[0-9a-fA-F]{24}$/).required()
@@ -64,6 +69,39 @@ const schemas = {
     })
   },
   transactionDeleteModel: {
+    params: Joi.object().keys({
+      id: Joi.string().regex(/^[0-9a-fA-F]{24}$/).required()
+    })
+  },
+  accountCreateModel: {
+    params: Joi.object().keys({
+      userId: Joi.string().regex(/^[0-9a-fA-F]{24}$/).required()
+    }),
+    body: Joi.object().keys({
+      description: Joi.string().required(),
+      balance: Joi.number().required()
+    })
+  },
+  accountReadOneModel: {
+    params: Joi.object().keys({
+      id: Joi.string().regex(/^[0-9a-fA-F]{24}$/).required()
+    })
+  },
+  accountReadAllModel: {
+    params: Joi.object().keys({
+      userId: Joi.string().regex(/^[0-9a-fA-F]{24}$/).required()
+    })
+  },
+  accountUpdateModel: {
+    params: Joi.object().keys({
+      id: Joi.string().regex(/^[0-9a-fA-F]{24}$/).required()
+    }),
+    body: Joi.object().min(1).keys({
+      description: Joi.string(),
+      balance: Joi.number()
+    })
+  },
+  accountDeleteModel: {
     params: Joi.object().keys({
       id: Joi.string().regex(/^[0-9a-fA-F]{24}$/).required()
     })

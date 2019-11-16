@@ -1,5 +1,6 @@
 // DEPENDENCIES
 const mongoose = require('mongoose')
+const winston = require('../../config/winston-logger')
 
 // MODEL IMPORTING
 const User = require('../models/user-model')
@@ -7,7 +8,7 @@ const User = require('../models/user-model')
 // AUTHENTICATION REQUIREMENTS
 const bcrypt = require('bcrypt-nodejs')
 
-// CREATE A NEW USER ON THE DATABASE
+// CREATE A NEW USER
 const create = async (request, response) => {
   try {
     const dbUser = await User.findOne({ email: request.body.email.toLowerCase() })
@@ -56,10 +57,10 @@ const create = async (request, response) => {
       response.status(409).json({ error: true, message: 'User Already Exists' })
     }
   } catch (error) {
-    response.status(500).json({ message: 'User was not created', error })
+    winston.log('error', `${new Date()} ${error}`)
   }
 }
-
+// READ A SPECIFIC USER
 const readOne = async (request, response) => {
   try {
     const dbUser = await User.findById(mongoose.Types.ObjectId(request.params.id))
@@ -90,10 +91,10 @@ const readOne = async (request, response) => {
 
     response.status(200).json(data)
   } catch (error) {
-    response.status(500).json({ error })
+    winston.log('error', `${new Date()} ${error}`)
   }
 }
-
+// READ ALL USERS
 const readAll = async (request, response) => {
   try {
     const dbUser = await User.find({})
@@ -130,7 +131,7 @@ const readAll = async (request, response) => {
     response.status(500).json({ error: true, message: error.message })
   }
 }
-
+// DELETE AN USER
 const remove = async (request, response) => {
   try {
     const dbUser = await User.findByIdAndDelete(mongoose.Types.ObjectId(request.params.id))
@@ -151,10 +152,10 @@ const remove = async (request, response) => {
     }
     response.status(200).json(data)
   } catch (error) {
-    response.status(500).json({ error: true, message: error.message })
+    winston.log('error', `${new Date()} ${error}`)
   }
 }
-
+// UPDATE AN USER
 const update = async (request, response) => {
   try {
     const id = mongoose.Types.ObjectId(request.params.id)
@@ -186,7 +187,7 @@ const update = async (request, response) => {
 
     response.status(200).json(data)
   } catch (error) {
-    response.status(500).json({ error: true, message: error.message })
+    winston.log('error', `${new Date()} ${error}`)
   }
 }
 
