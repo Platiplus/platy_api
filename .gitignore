@@ -2,6 +2,5 @@
 /mochawesome-report/
 /.nyc_output/
 /coverage/
-/logs/*
 .env
 .coveralls.yml
