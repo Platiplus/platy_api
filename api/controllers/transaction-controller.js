@@ -10,7 +10,7 @@ const Transaction = require('../models/transaction-model')
 // CREATE A NEW TRANSACTION
 const create = async (request, response) => {
   try {
-    const { type, date, description, target, value, category, status } = request.body
+    const { type, date, description, target, value, category, status, quotas } = request.body
     // @TODO Owner id should come from jwt token
     const owner = request.params.userId
 
