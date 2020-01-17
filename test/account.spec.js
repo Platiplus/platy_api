@@ -111,7 +111,7 @@ describe('Account', () => {
     })
   })
   describe('/GET /accounts/:id', () => {
-    it('it should find a specific transaction', (done) => {
+    it('it should find a specific account', (done) => {
       chai.request(server)
         .get(`/accounts/${createdAccount._id}`)
         .end((err, res) => {
@@ -229,7 +229,7 @@ describe('Account', () => {
           done()
         })
     })
-    it('it should fail to delete a transaction that does not exists on the database', (done) => {
+    it('it should fail to delete an account that does not exists on the database', (done) => {
       chai.request(server)
         .delete(`/accounts/${mongoose.Types.ObjectId()}`)
         .end((err, res) => {

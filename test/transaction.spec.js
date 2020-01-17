@@ -35,7 +35,8 @@ describe('Transaction', () => {
     target: casual.username,
     value: Math.random() * (500 - 1) + 1,
     category: casual.word,
-    status: casual.boolean
+    status: casual.boolean,
+    quotas: 'null'
   }
 
   let createdTransaction
