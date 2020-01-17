@@ -33,6 +33,10 @@ const transactionSchema = mongoose.Schema(
       type: Boolean,
       required: true
     },
+    quotas: {
+      type: String,
+      required: true
+    },
     owner: {
       type: mongoose.Schema.Types.ObjectId,
       required: true

@@ -41,7 +41,8 @@ const schemas = {
       target: Joi.string().required(),
       value: Joi.number().required(),
       category: Joi.string().required(),
-      status: Joi.boolean().required()
+      status: Joi.boolean().required(),
+      quotas: Joi.string().required()
     })
   },
   transactionReadOneModel: {
@@ -65,7 +66,8 @@ const schemas = {
       target: Joi.string(),
       value: Joi.number(),
       category: Joi.string(),
-      status: Joi.boolean()
+      status: Joi.boolean(),
+      quotas: Joi.string(),
     })
   },
   transactionDeleteModel: {

@@ -29,6 +29,7 @@ const create = async (request, response) => {
       value,
       category,
       status,
+      quotas,
       owner: mongoose.Types.ObjectId(owner)
     })
 
@@ -45,6 +46,7 @@ const create = async (request, response) => {
         value: createdTransaction.value,
         category: createdTransaction.category,
         status: createdTransaction.status,
+        quotas: createdTransaction.quotas,
         owner: createdTransaction.owner,
         requests: [
           {
@@ -87,6 +89,7 @@ const readOne = async (request, response) => {
         value: dbTransaction.value,
         category: dbTransaction.category,
         status: dbTransaction.status,
+        quotas: dbTransaction.quotas,
         owner: dbTransaction.owner,
         requests: [
           {
@@ -125,6 +128,7 @@ const readAll = async (request, response) => {
           value: transaction.value,
           category: transaction.category,
           status: transaction.status,
+          quotas: transaction.quotas,
           owner: transaction.owner,
           requests: [
             {
@@ -165,7 +169,7 @@ const remove = async (request, response) => {
         {
           type: 'POST',
           url: `${process.env.API_URL}/transactions/`,
-          data: { type: 'Number', date: 'String', description: 'String', target: 'String', value: 'Number', category: 'String', status: 'Boolean', owner: 'String' }
+          data: { type: 'Number', date: 'String', description: 'String', target: 'String', value: 'Number', category: 'String', status: 'Boolean', quotas: 'String', owner: 'String' }
         }
       ]
     }
@@ -203,6 +207,7 @@ const update = async (request, response) => {
         value: dbTransaction.value,
         category: dbTransaction.category,
         status: dbTransaction.status,
+        quotas: dbTransaction.quotas,
         owner: dbTransaction.owner,
         requests: [
           {
