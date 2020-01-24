@@ -114,7 +114,7 @@ const readOne = async (request, response) => {
 const readAll = async (request, response) => {
   try {
     // @TODO Owner id should come from jwt token
-    const dbTransaction = await Transaction.find({ owner: request.params.userId })
+    const dbTransaction = await Transaction.find(utils.createTransactionQuery(request.params))
 
     const data = {
       count: dbTransaction.length,

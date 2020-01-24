@@ -52,7 +52,14 @@ const schemas = {
   },
   transactionReadAllModel: {
     params: Joi.object().keys({
-      userId: Joi.string().regex(/^[0-9a-fA-F]{24}$/).required()
+      userId: Joi.string().regex(/^[0-9a-fA-F]{24}$/).required(),
+      type: Joi.number().min(0).max(2),
+      target: Joi.string(),
+      category: Joi.string(),
+      status: Joi.boolean(),
+      quotas: Joi.string(),
+      dateStart: Joi.string().regex(/^\d{2}([./-])\d{2}\1\d{4}$/),
+      dateEnd: Joi.string().regex(/^\d{2}([./-])\d{2}\1\d{4}$/)
     })
   },
   transactionUpdateModel: {
@@ -67,7 +74,7 @@ const schemas = {
       value: Joi.number(),
       category: Joi.string(),
       status: Joi.boolean(),
-      quotas: Joi.string(),
+      quotas: Joi.string()
     })
   },
   transactionDeleteModel: {
