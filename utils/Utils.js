@@ -40,14 +40,18 @@ class Utils {
       query.quotas = params.quotas
     }
 
-    if ('dateStart' in params) {
-      query.date.$gt = params.dateStart
-    }
+    if('dateStart' in params || 'dateEnd' in params){
+      query.date = {}
 
-    if ('dateEnd' in params) {
-      query.date.$lt = params.dateEnd
+      if ('dateStart' in params) {
+        query.date.$gt = params.dateStart
+      }
+  
+      if ('dateEnd' in params) {
+        query.date.$lt = params.dateEnd
+      }
     }
-
+    
     return query
   }
 }
