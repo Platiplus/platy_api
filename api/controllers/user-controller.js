@@ -1,6 +1,5 @@
 // DEPENDENCIES
 const mongoose = require('mongoose')
-const winston = require('../../config/winston-logger')
 
 // MODEL IMPORTING
 const User = require('../models/user-model')
@@ -57,7 +56,7 @@ const create = async (request, response) => {
       response.status(409).json({ error: true, message: 'User Already Exists' })
     }
   } catch (error) {
-    winston.log('error', `${new Date()} ${error}`)
+    console.log('error', `${new Date()} ${error}`)
   }
 }
 // READ A SPECIFIC USER
@@ -91,7 +90,7 @@ const readOne = async (request, response) => {
 
     response.status(200).json(data)
   } catch (error) {
-    winston.log('error', `${new Date()} ${error}`)
+    console.log('error', `${new Date()} ${error}`)
   }
 }
 // READ ALL USERS
@@ -152,7 +151,7 @@ const remove = async (request, response) => {
     }
     response.status(200).json(data)
   } catch (error) {
-    winston.log('error', `${new Date()} ${error}`)
+    console.log('error', `${new Date()} ${error}`)
   }
 }
 // UPDATE AN USER
@@ -187,7 +186,7 @@ const update = async (request, response) => {
 
     response.status(200).json(data)
   } catch (error) {
-    winston.log('error', `${new Date()} ${error}`)
+    console.log('error', `${new Date()} ${error}`)
   }
 }
 

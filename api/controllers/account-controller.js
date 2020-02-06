@@ -1,5 +1,4 @@
 // DEPENDENCIES
-const winston = require('../../config/winston-logger')
 const mongoose = require('mongoose')
 
 // MODEL IMPORTING
@@ -48,7 +47,7 @@ const create = async (request, response) => {
     }
     response.status(201).json(data)
   } catch (error) {
-    winston.log('error', `${new Date()} ${error}`)
+    console.log('error', `${new Date()} ${error}`)
   }
 }
 
@@ -82,7 +81,7 @@ const readOne = async (request, response) => {
     }
     response.status(200).json(data)
   } catch (error) {
-    winston.log('error', `${new Date()} ${error}`)
+    console.log('error', `${new Date()} ${error}`)
   }
 }
 
@@ -121,7 +120,7 @@ const readAll = async (request, response) => {
 
     response.status(200).json(data)
   } catch (error) {
-    winston.log('error', `${new Date()} ${error}`)
+    console.log('error', `${new Date()} ${error}`)
   }
 }
 
@@ -146,7 +145,7 @@ const remove = async (request, response) => {
     }
     response.status(200).json(data)
   } catch (error) {
-    winston.log('error', `${new Date()} ${error}`)
+    console.log('error', `${new Date()} ${error}`)
   }
 }
 
@@ -182,7 +181,7 @@ const update = async (request, response) => {
 
     response.status(200).json(data)
   } catch (error) {
-    winston.log('error', `${new Date()} ${error}`)
+    console.log('error', `${new Date()} ${error}`)
   }
 }
 

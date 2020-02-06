@@ -1,6 +1,5 @@
 /* eslint-env mocha */
 require('dotenv').config()
-const winston = require('../config/winston-logger')
 
 // UTILS AND MODELS
 const Utils = require('../utils/Utils')
@@ -33,16 +32,10 @@ describe('Utils', () => {
       expect(query).to.have.property('status')
       expect(query).to.have.property('quotas')
       expect(query).to.have.property('date')
+      expect(params).property('dateStart').to.not.be(undefined)
+      expect(params).property('dateEnd').to.not.be(undefined)
       expect(query).property('date').to.have.property('$gt')
       expect(query).property('date').to.have.property('$lt')
-      done()
-    })
-  })
-
-  describe('Logger', () => {
-    it('it should log a message', (done) => {
-      const log = winston.debug('message')
-      expect(log).to.have.property('write')
       done()
     })
   })

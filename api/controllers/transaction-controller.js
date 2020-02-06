@@ -1,5 +1,4 @@
 // DEPENDENCIES
-const winston = require('../../config/winston-logger')
 const mongoose = require('mongoose')
 const Utils = require('../../utils/Utils')
 const utils = new Utils()
@@ -67,7 +66,7 @@ const create = async (request, response) => {
     }
     response.status(201).json(data)
   } catch (error) {
-    winston.log('error', `${new Date()} ${error}`)
+    console.log('error', `${new Date()} ${error}`)
   }
 }
 // READ A TRANSACTION
@@ -107,7 +106,7 @@ const readOne = async (request, response) => {
 
     response.status(200).json(data)
   } catch (error) {
-    winston.log('error', `${new Date()} ${error}`)
+    console.log('error', `${new Date()} ${error}`)
   }
 }
 // READ ALL TRANSACTIONS OF A SPECIFIC USER
@@ -151,7 +150,7 @@ const readAll = async (request, response) => {
 
     response.status(200).json(data)
   } catch (error) {
-    winston.log('error', `${new Date()} ${error}`)
+    console.log('error', `${new Date()} ${error}`)
   }
 }
 // DELETE A TRANSACTION
@@ -175,7 +174,7 @@ const remove = async (request, response) => {
     }
     response.status(200).json(data)
   } catch (error) {
-    winston.log('error', `${new Date()} ${error}`)
+    console.log('error', `${new Date()} ${error}`)
   }
 }
 // UPDATE DATA ON A TRANSACTION
@@ -224,7 +223,7 @@ const update = async (request, response) => {
 
     response.status(200).json(data)
   } catch (error) {
-    winston.log('error', `${new Date()} ${error}`)
+    console.log('error', `${new Date()} ${error}`)
   }
 }
 
