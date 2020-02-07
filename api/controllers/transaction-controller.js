@@ -8,7 +8,6 @@ const Transaction = require('../models/transaction-model')
 
 // CREATE A NEW TRANSACTION
 const create = async (request, response) => {
-  try {
     const { type, date, description, target, value, category, status, quotas } = request.body
     // @TODO Owner id should come from jwt token
     const owner = request.params.userId
@@ -65,13 +64,9 @@ const create = async (request, response) => {
       }
     }
     response.status(201).json(data)
-  } catch (error) {
-    console.log('error', `${new Date()} ${error}`)
-  }
 }
 // READ A TRANSACTION
 const readOne = async (request, response) => {
-  try {
     const dbTransaction = await Transaction.findById(mongoose.Types.ObjectId(request.params.id))
 
     if (!dbTransaction) {
@@ -105,13 +100,9 @@ const readOne = async (request, response) => {
     }
 
     response.status(200).json(data)
-  } catch (error) {
-    console.log('error', `${new Date()} ${error}`)
-  }
 }
 // READ ALL TRANSACTIONS OF A SPECIFIC USER
 const readAll = async (request, response) => {
-  try {
     // @TODO Owner id should come from jwt token
     const dbTransaction = await Transaction.find(utils.createTransactionQuery(request.params))
 
@@ -147,15 +138,10 @@ const readAll = async (request, response) => {
         }
       })
     }
-
     response.status(200).json(data)
-  } catch (error) {
-    console.log('error', `${new Date()} ${error}`)
-  }
 }
 // DELETE A TRANSACTION
 const remove = async (request, response) => {
-  try {
     const dbTransaction = await Transaction.findByIdAndDelete(mongoose.Types.ObjectId(request.params.id))
 
     if (!dbTransaction) {
@@ -173,13 +159,9 @@ const remove = async (request, response) => {
       ]
     }
     response.status(200).json(data)
-  } catch (error) {
-    console.log('error', `${new Date()} ${error}`)
-  }
 }
 // UPDATE DATA ON A TRANSACTION
 const update = async (request, response) => {
-  try {
     const id = mongoose.Types.ObjectId(request.params.id)
 
     const parsedDate = utils.normalizeDate(request.body.date)
@@ -220,11 +202,7 @@ const update = async (request, response) => {
         ]
       }
     }
-
     response.status(200).json(data)
-  } catch (error) {
-    console.log('error', `${new Date()} ${error}`)
-  }
 }
 
 module.exports = {

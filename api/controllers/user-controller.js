@@ -9,7 +9,6 @@ const bcrypt = require('bcrypt-nodejs')
 
 // CREATE A NEW USER
 const create = async (request, response) => {
-  try {
     const dbUser = await User.findOne({ email: request.body.email.toLowerCase() })
 
     if (!dbUser) {
@@ -55,13 +54,9 @@ const create = async (request, response) => {
     } else {
       response.status(409).json({ error: true, message: 'User Already Exists' })
     }
-  } catch (error) {
-    console.log('error', `${new Date()} ${error}`)
-  }
 }
 // READ A SPECIFIC USER
 const readOne = async (request, response) => {
-  try {
     const dbUser = await User.findById(mongoose.Types.ObjectId(request.params.id))
 
     if (!dbUser) {
@@ -89,13 +84,9 @@ const readOne = async (request, response) => {
     }
 
     response.status(200).json(data)
-  } catch (error) {
-    console.log('error', `${new Date()} ${error}`)
-  }
 }
 // READ ALL USERS
 const readAll = async (request, response) => {
-  try {
     const dbUser = await User.find({})
 
     const data = {
@@ -126,13 +117,9 @@ const readAll = async (request, response) => {
     }
 
     response.status(200).json(data)
-  } catch (error) {
-    response.status(500).json({ error: true, message: error.message })
-  }
 }
 // DELETE AN USER
 const remove = async (request, response) => {
-  try {
     const dbUser = await User.findByIdAndDelete(mongoose.Types.ObjectId(request.params.id))
 
     if (!dbUser) {
@@ -150,13 +137,9 @@ const remove = async (request, response) => {
       ]
     }
     response.status(200).json(data)
-  } catch (error) {
-    console.log('error', `${new Date()} ${error}`)
-  }
 }
 // UPDATE AN USER
 const update = async (request, response) => {
-  try {
     const id = mongoose.Types.ObjectId(request.params.id)
 
     const dbUser = await User.findByIdAndUpdate(id, request.body)
@@ -185,9 +168,6 @@ const update = async (request, response) => {
     }
 
     response.status(200).json(data)
-  } catch (error) {
-    console.log('error', `${new Date()} ${error}`)
-  }
 }
 
 module.exports = {

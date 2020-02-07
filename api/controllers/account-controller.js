@@ -6,7 +6,6 @@ const Account = require('../models/account-model')
 
 // CREATE A NEW ACCOUNT
 const create = async (request, response) => {
-  try {
     const { description, balance } = request.body
 
     // @TODO Owner id should come from jwt token
@@ -46,14 +45,10 @@ const create = async (request, response) => {
       }
     }
     response.status(201).json(data)
-  } catch (error) {
-    console.log('error', `${new Date()} ${error}`)
-  }
 }
 
 // READ AN ACCOUNT
 const readOne = async (request, response) => {
-  try {
     const dbAccount = await Account.findById(mongoose.Types.ObjectId(request.params.id))
 
     if (!dbAccount) {
@@ -80,14 +75,10 @@ const readOne = async (request, response) => {
       }
     }
     response.status(200).json(data)
-  } catch (error) {
-    console.log('error', `${new Date()} ${error}`)
-  }
 }
 
 // READ ALL ACCOUNTS OF A SPECIFIC USER
 const readAll = async (request, response) => {
-  try {
     // @TODO Owner id should come from jwt token
     const dbAccount = await Account.find({ owner: request.params.userId })
 
@@ -119,14 +110,10 @@ const readAll = async (request, response) => {
     }
 
     response.status(200).json(data)
-  } catch (error) {
-    console.log('error', `${new Date()} ${error}`)
-  }
 }
 
 // DELETE AN ACCOUNT
 const remove = async (request, response) => {
-  try {
     const dbAccount = await Account.findByIdAndDelete(mongoose.Types.ObjectId(request.params.id))
 
     if (!dbAccount) {
@@ -144,14 +131,10 @@ const remove = async (request, response) => {
       ]
     }
     response.status(200).json(data)
-  } catch (error) {
-    console.log('error', `${new Date()} ${error}`)
-  }
 }
 
 // UPDATE DATA ON AN ACCOUNT
 const update = async (request, response) => {
-  try {
     const id = mongoose.Types.ObjectId(request.params.id)
 
     const dbAccount = await Account.findByIdAndUpdate(id, request.body)
@@ -180,9 +163,6 @@ const update = async (request, response) => {
     }
 
     response.status(200).json(data)
-  } catch (error) {
-    console.log('error', `${new Date()} ${error}`)
-  }
 }
 
 module.exports = {
