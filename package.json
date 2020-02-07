@@ -8,7 +8,7 @@
     "test-only": "mocha --timeout 10000 --exit"
   },
   "nyc": {
-    "exclude": "**/*.dev.js"
+    "exclude": ["**/*.dev.js", "**/*.spec.js"]
   },
   "repository": {
     "type": "git",
