@@ -7,9 +7,7 @@ const Account = require('../models/account-model')
 // CREATE A NEW ACCOUNT
 const create = async (request, response) => {
     const { description, balance } = request.body
-
-    // @TODO Owner id should come from jwt token
-    const owner = request.params.userId
+    const owner = request.owner
 
     const account = new Account({
       _id: mongoose.Types.ObjectId(),
@@ -79,8 +77,7 @@ const readOne = async (request, response) => {
 
 // READ ALL ACCOUNTS OF A SPECIFIC USER
 const readAll = async (request, response) => {
-    // @TODO Owner id should come from jwt token
-    const dbAccount = await Account.find({ owner: request.params.userId })
+    const dbAccount = await Account.find({ owner: request.owner })
 
     const data = {
       count: dbAccount.length,

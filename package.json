@@ -8,7 +8,10 @@
     "test-only": "mocha --timeout 10000 --exit"
   },
   "nyc": {
-    "exclude": ["**/*.dev.js", "**/*.spec.js"]
+    "exclude": [
+      "**/*.dev.js",
+      "**/*.spec.js"
+    ]
   },
   "repository": {
     "type": "git",
@@ -26,6 +29,7 @@
   },
   "homepage": "https://github.com/Platiplus/platy_api#readme",
   "dependencies": {
+    "axios": "^0.19.2",
     "bcrypt-nodejs": "0.0.3",
     "body-parser": "^1.19.0",
     "celebrate": "^10.1.0",

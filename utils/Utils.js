@@ -15,10 +15,10 @@ class Utils {
     return undefined
   }
 
-  createTransactionQuery (params) {
+  createTransactionQuery (params, owner) {
     const query = {}
 
-    query.owner = params.userId
+    query.owner = owner
 
     if ('type' in params) {
       query.type = params.type

@@ -9,8 +9,7 @@ const Transaction = require('../models/transaction-model')
 // CREATE A NEW TRANSACTION
 const create = async (request, response) => {
     const { type, date, description, target, value, category, status, quotas } = request.body
-    // @TODO Owner id should come from jwt token
-    const owner = request.params.userId
+    const owner = request.owner
 
     const parsedDate = utils.normalizeDate(date)
 
@@ -103,8 +102,7 @@ const readOne = async (request, response) => {
 }
 // READ ALL TRANSACTIONS OF A SPECIFIC USER
 const readAll = async (request, response) => {
-    // @TODO Owner id should come from jwt token
-    const dbTransaction = await Transaction.find(utils.createTransactionQuery(request.params))
+    const dbTransaction = await Transaction.find(utils.createTransactionQuery(request.params, request.owner))
 
     const data = {
       count: dbTransaction.length,
