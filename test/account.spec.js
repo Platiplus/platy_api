@@ -5,6 +5,7 @@ const Database = require('../utils/Database')
 const Utils = require('../utils/Utils')
 const User = require('../api/models/user-model')
 const mongoose = require('mongoose')
+const axios = require('axios').default
 
 // DEV DEPENDENCIES
 const casual = require('casual')
@@ -13,6 +14,7 @@ const expect = chai.expect
 const dirtyChai = require('dirty-chai')
 const chaiHttp = require('chai-http')
 const server = require('../app')
+let auth;
 
 // MIDDLEWARES
 chai.use(chaiHttp)
@@ -20,13 +22,13 @@ chai.use(dirtyChai)
 
 // ACCOUNT RELATED TESTS
 describe('Account', () => {
-  let mockUser = new User({
+  let mockUser = {
     _id: mongoose.Types.ObjectId(),
     username: casual.username,
     email: casual.email,
     password: casual.password,
     initialBalance: Math.random() * (9999 - 1) + 1
-  })
+  }
 
   const mockAccount = {
     description: casual.short_description,
@@ -37,15 +39,28 @@ describe('Account', () => {
 
   before(async () => {
     const db = new Database()
-    await db.connect('test')
+    await db.connect()
     await User.deleteMany({})
-    mockUser = await mockUser.save()
+    const postUser = Object.fromEntries(Object.entries(mockUser));
+    delete postUser._id;
+
+    await chai.request(server)
+      .post('/users/')
+      .send(postUser);
+
+    auth = await axios.post(`${process.env.AUTH_URL}/signin`, 
+        { 
+          email: mockUser.email,
+          password: mockUser.password
+        })
+    auth = `Bearer ${ auth.data }`
   })
 
-  describe('/POST /accounts/:userID', () => {
+  describe('/POST /accounts/', () => {
     it('it should create an account', (done) => {
       chai.request(server)
-        .post(`/accounts/${mockUser._id}`)
+        .post(`/accounts/`)
+        .set('authorization', auth)
         .send(mockAccount)
         .end((err, res) => {
           createdAccount = res.body.createdAccount
@@ -62,7 +77,8 @@ describe('Account', () => {
       let account = Object.fromEntries(entries)
       account = util.chaoticInputGenerator(account)
       chai.request(server)
-        .post(`/accounts/${mockUser._id}`)
+        .post(`/accounts/`)
+        .set('authorization', auth)
         .send(account)
         .end((err, res) => {
           expect(err).to.be.null()
@@ -76,19 +92,9 @@ describe('Account', () => {
       const account = Object.fromEntries(entries)
       account.balance = 'x98sh'
       chai.request(server)
-        .post(`/accounts/${mockUser._id}`)
+        .post(`/accounts/`)
+        .set('authorization', auth)
         .send(account)
-        .end((err, res) => {
-          expect(err).to.be.null()
-          expect(res).to.have.status(400)
-          expect(res.error).not.to.be.null()
-          done()
-        })
-    })
-    it('it should fail when owner is invalid', (done) => {
-      chai.request(server)
-        .post('/accounts/invalidUserID')
-        .send(mockAccount)
         .end((err, res) => {
           expect(err).to.be.null()
           expect(res).to.have.status(400)
@@ -100,7 +106,8 @@ describe('Account', () => {
   describe('/GET /accounts/user/:userId', () => {
     it('it should find a collection of accounts from a specific user', (done) => {
       chai.request(server)
-        .get(`/accounts/user/${mockUser._id}`)
+        .get(`/accounts/all`)
+        .set('authorization', auth)
         .end((err, res) => {
           expect(err).to.be.null()
           expect(res).to.have.status(200)
@@ -114,6 +121,7 @@ describe('Account', () => {
     it('it should find a specific account', (done) => {
       chai.request(server)
         .get(`/accounts/${createdAccount._id}`)
+        .set('authorization', auth)
         .end((err, res) => {
           expect(err).to.be.null()
           expect(res).to.have.status(200)
@@ -125,6 +133,7 @@ describe('Account', () => {
     it('it should fail to find an account that does not exists on the database', (done) => {
       chai.request(server)
         .get(`/accounts/${mongoose.Types.ObjectId()}`)
+        .set('authorization', auth)
         .end((err, res) => {
           expect(err).to.be.null()
           expect(res).to.have.status(404)
@@ -136,6 +145,7 @@ describe('Account', () => {
     it('it should fail to find an account if ObjectId is invalid', (done) => {
       chai.request(server)
         .get('/accounts/invalidObjectId')
+        .set('authorization', auth)
         .end((err, res) => {
           expect(err).to.be.null()
           expect(res).to.have.status(400)
@@ -148,6 +158,7 @@ describe('Account', () => {
     it('it should patch a specific account', (done) => {
       chai.request(server)
         .patch(`/accounts/${createdAccount._id}`)
+        .set('authorization', auth)
         .send({ description: 'Updated account' })
         .end((err, res) => {
           expect(err).to.be.null()
@@ -160,6 +171,7 @@ describe('Account', () => {
     it('it should fail to patch an account that does not exists on the database', (done) => {
       chai.request(server)
         .patch(`/accounts/${mongoose.Types.ObjectId()}`)
+        .set('authorization', auth)
         .send({ description: 'Updated account' })
         .end((err, res) => {
           expect(err).to.be.null()
@@ -172,6 +184,7 @@ describe('Account', () => {
     it('it should fail to patch an account if there are no properties on the request', (done) => {
       chai.request(server)
         .patch(`/accounts/${createdAccount._id}`)
+        .set('authorization', auth)
         .send({})
         .end((err, res) => {
           expect(err).to.be.null()
@@ -183,6 +196,7 @@ describe('Account', () => {
     it('it should fail to patch an account if there are unknow properties on the request', (done) => {
       chai.request(server)
         .patch(`/accounts/${createdAccount._id}`)
+        .set('authorization', auth)
         .send({ malicious_property: 'hackerman' })
         .end((err, res) => {
           expect(err).to.be.null()
@@ -194,6 +208,7 @@ describe('Account', () => {
     it('it should fail to patch if ObjectId is invalid', (done) => {
       chai.request(server)
         .patch('/accounts/invalidObjectId')
+        .set('authorization', auth)
         .send({ description: 'Updated account' })
         .end((err, res) => {
           expect(err).to.be.null()
@@ -207,7 +222,8 @@ describe('Account', () => {
       const account = Object.fromEntries(entries)
       account.balance = 'x98sh'
       chai.request(server)
-        .post(`/accounts/${mockUser._id}`)
+        .patch(`/accounts/${createdAccount._id}`)
+        .set('authorization', auth)
         .send(account)
         .end((err, res) => {
           expect(err).to.be.null()
@@ -221,6 +237,7 @@ describe('Account', () => {
     it('it should delete an account from the database', (done) => {
       chai.request(server)
         .delete(`/accounts/${createdAccount._id}`)
+        .set('authorization', auth)
         .end((err, res) => {
           expect(err).to.be.null()
           expect(res).to.have.status(200)
@@ -232,6 +249,7 @@ describe('Account', () => {
     it('it should fail to delete an account that does not exists on the database', (done) => {
       chai.request(server)
         .delete(`/accounts/${mongoose.Types.ObjectId()}`)
+        .set('authorization', auth)
         .end((err, res) => {
           expect(err).to.be.null()
           expect(res).to.have.status(404)
@@ -243,6 +261,7 @@ describe('Account', () => {
     it('it should fail to delete if ObjectId is invalid', (done) => {
       chai.request(server)
         .delete('/accounts/invalidObjectId')
+        .set('authorization', auth)
         .end((err, res) => {
           expect(err).to.be.null()
           expect(res).to.have.status(400)

@@ -13,6 +13,7 @@ const expect = chai.expect
 const dirtyChai = require('dirty-chai')
 const chaiHttp = require('chai-http')
 const server = require('../app')
+const axios = require('axios').default
 
 // MIDDLEWARES
 chai.use(chaiHttp)
@@ -26,11 +27,11 @@ describe('User', () => {
     password: casual.password,
     initialBalance: Math.random() * (9999 - 1) + 1
   }
-  let registeredUser
+  let auth
 
   before(async () => {
     const db = new Database()
-    await db.connect('test')
+    await db.connect()
     await User.deleteMany({})
   })
 
@@ -39,8 +40,13 @@ describe('User', () => {
       chai.request(server)
         .post('/users/')
         .send(mockUser)
-        .end((err, res) => {
-          registeredUser = res.body.createdUser
+        .end(async (err, res) => {
+          auth = await axios.post(`${process.env.AUTH_URL}/signin`, 
+            { 
+              email: mockUser.email,
+              password: mockUser.password
+            })
+          auth = `Bearer ${ auth.data }`
           expect(err).to.be.null()
           expect(res).to.have.status(201)
           expect(res.body).to.be.a('object')
@@ -77,10 +83,11 @@ describe('User', () => {
         })
     })
   })
-  describe('/GET /users/', () => {
+  describe('/GET /users/all', () => {
     it('it should find a collection of users', (done) => {
       chai.request(server)
-        .get('/users/')
+        .get('/users/all')
+        .set('authorization', auth)
         .end((err, res) => {
           expect(err).to.be.null()
           expect(res).to.have.status(200)
@@ -90,68 +97,38 @@ describe('User', () => {
         })
     })
   })
-  describe('/GET /users/:id', () => {
+  describe('/GET /users/', () => {
     it('it should find a specific user', (done) => {
       chai.request(server)
-        .get(`/users/${registeredUser._id}`)
+        .get(`/users/`)
+        .set('authorization', auth)
         .end((err, res) => {
           expect(err).to.be.null()
           expect(res).to.have.status(200)
           expect(res.body).to.be.a('object')
           expect(res.body.user).to.be.an('object')
-          done()
-        })
-    })
-    it('it should fail to find an user that does not exists on the database', (done) => {
-      chai.request(server)
-        .get(`/users/${mongoose.Types.ObjectId()}`)
-        .end((err, res) => {
-          expect(err).to.be.null()
-          expect(res).to.have.status(404)
-          expect(res.body).to.be.a('object')
-          expect(res.body).to.have.property('message').equal('User not found on database')
-          done()
-        })
-    })
-    it('it should fail to find an user if ObjectId is invalid', (done) => {
-      chai.request(server)
-        .get('/users/invalidObjectId')
-        .end((err, res) => {
-          expect(err).to.be.null()
-          expect(res).to.have.status(400)
-          expect(res.error).not.to.be.null()
           done()
         })
     })
   })
-  describe('/PATCH /user/:id', () => {
+  describe('/PATCH /user/', () => {
     it('it should patch a specific user', (done) => {
       chai.request(server)
-        .patch(`/users/${registeredUser._id}`)
+        .patch(`/users/`)
+        .set('authorization', auth)
         .send({ username: 'test' })
         .end((err, res) => {
           expect(err).to.be.null()
           expect(res).to.have.status(200)
           expect(res.body).to.be.a('object')
           expect(res.body.user).to.be.an('object')
-          done()
-        })
-    })
-    it('it should fail to patch an user that does not exists on the database', (done) => {
-      chai.request(server)
-        .patch(`/users/${mongoose.Types.ObjectId()}`)
-        .send({ username: 'test' })
-        .end((err, res) => {
-          expect(err).to.be.null()
-          expect(res).to.have.status(404)
-          expect(res.body).to.be.a('object')
-          expect(res.body).to.have.property('message').equal('User not found on database')
           done()
         })
     })
     it('it should fail to patch an user if there are no properties on the request', (done) => {
       chai.request(server)
-        .patch(`/users/${registeredUser._id}`)
+        .patch(`/users/`)
+        .set('authorization', auth)
         .send({})
         .end((err, res) => {
           expect(err).to.be.null()
@@ -162,7 +139,8 @@ describe('User', () => {
     })
     it('it should fail to patch an user if there are unknow properties on the request', (done) => {
       chai.request(server)
-        .patch(`/users/${registeredUser._id}`)
+        .patch(`/users/`)
+        .set('authorization', auth)
         .send({ malicious_property: 'hackerman' })
         .end((err, res) => {
           expect(err).to.be.null()
@@ -171,47 +149,17 @@ describe('User', () => {
           done()
         })
     })
-    it('it should fail to patch if ObjectId is invalid', (done) => {
-      chai.request(server)
-        .patch('/users/invalidObjectId')
-        .end((err, res) => {
-          expect(err).to.be.null()
-          expect(res).to.have.status(400)
-          expect(res.error).not.to.be.null()
-          done()
-        })
-    })
   })
-  describe('/DELETE /user/:id', () => {
+  describe('/DELETE /user/', () => {
     it('it should delete an user from the database', (done) => {
       chai.request(server)
-        .delete(`/users/${registeredUser._id}`)
+        .delete(`/users/`)
+        .set('authorization', auth)
         .end((err, res) => {
           expect(err).to.be.null()
           expect(res).to.have.status(200)
           expect(res.body).to.be.a('object')
           expect(res.body).to.have.property('message').equal('User deleted successfully')
-          done()
-        })
-    })
-    it('it should fail to delete an user that does not exists on the database', (done) => {
-      chai.request(server)
-        .delete(`/users/${mongoose.Types.ObjectId()}`)
-        .end((err, res) => {
-          expect(err).to.be.null()
-          expect(res).to.have.status(404)
-          expect(res.body).to.be.a('object')
-          expect(res.body).to.have.property('message').equal('User not found on database')
-          done()
-        })
-    })
-    it('it should fail to delete if ObjectId is invalid', (done) => {
-      chai.request(server)
-        .delete('/users/invalidObjectId')
-        .end((err, res) => {
-          expect(err).to.be.null()
-          expect(res).to.have.status(400)
-          expect(res.error).not.to.be.null()
           done()
         })
     })

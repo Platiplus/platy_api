@@ -57,7 +57,7 @@ const create = async (request, response) => {
 }
 // READ A SPECIFIC USER
 const readOne = async (request, response) => {
-    const dbUser = await User.findById(mongoose.Types.ObjectId(request.params.id))
+    const dbUser = await User.findById(mongoose.Types.ObjectId(request.owner))
 
     if (!dbUser) {
       return response.status(404).json({ error: true, message: 'User not found on database' })
@@ -120,7 +120,7 @@ const readAll = async (request, response) => {
 }
 // DELETE AN USER
 const remove = async (request, response) => {
-    const dbUser = await User.findByIdAndDelete(mongoose.Types.ObjectId(request.params.id))
+    const dbUser = await User.findByIdAndDelete(mongoose.Types.ObjectId(request.owner))
 
     if (!dbUser) {
       return response.status(404).json({ error: true, message: 'User not found on database' })
@@ -140,7 +140,7 @@ const remove = async (request, response) => {
 }
 // UPDATE AN USER
 const update = async (request, response) => {
-    const id = mongoose.Types.ObjectId(request.params.id)
+    const id = mongoose.Types.ObjectId(request.owner)
 
     const dbUser = await User.findByIdAndUpdate(id, request.body)
 

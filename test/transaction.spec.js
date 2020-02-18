@@ -5,6 +5,7 @@ const Database = require('../utils/Database')
 const Utils = require('../utils/Utils')
 const User = require('../api/models/user-model')
 const mongoose = require('mongoose')
+const axios = require('axios').default
 
 // DEV DEPENDENCIES
 const casual = require('casual')
@@ -20,13 +21,13 @@ chai.use(dirtyChai)
 
 // USER RELATED TESTS
 describe('Transaction', () => {
-  let mockUser = new User({
+  let mockUser = {
     _id: mongoose.Types.ObjectId(),
     username: casual.username,
     email: casual.email,
     password: casual.password,
     initialBalance: Math.random() * (9999 - 1) + 1
-  })
+  }
 
   const mockTransaction = {
     type: 1,
@@ -40,18 +41,32 @@ describe('Transaction', () => {
   }
 
   let createdTransaction
+  let auth
 
   before(async () => {
     const db = new Database()
-    await db.connect('test')
+    await db.connect()
     await User.deleteMany({})
-    mockUser = await mockUser.save()
+    const postUser = Object.fromEntries(Object.entries(mockUser));
+    delete postUser._id;
+
+    await chai.request(server)
+      .post('/users/')
+      .send(postUser);
+
+    auth = await axios.post(`${process.env.AUTH_URL}/signin`, 
+        { 
+          email: mockUser.email,
+          password: mockUser.password
+        })
+    auth = `Bearer ${ auth.data }`
   })
 
-  describe('/POST /transactions/:userID', () => {
+  describe('/POST /transactions/', () => {
     it('it should create a transaction', (done) => {
       chai.request(server)
-        .post(`/transactions/${mockUser._id}`)
+        .post(`/transactions/`)
+        .set('authorization', auth)
         .send(mockTransaction)
         .end((err, res) => {
           createdTransaction = res.body.createdTransaction
@@ -68,7 +83,8 @@ describe('Transaction', () => {
       let transaction = Object.fromEntries(entries)
       transaction = util.chaoticInputGenerator(transaction)
       chai.request(server)
-        .post(`/transactions/${mockUser._id}`)
+        .post(`/transactions/`)
+        .set('authorization', auth)
         .send(transaction)
         .end((err, res) => {
           expect(err).to.be.null()
@@ -82,7 +98,8 @@ describe('Transaction', () => {
       const transaction = Object.fromEntries(entries)
       transaction.date = '99/99/9999'
       chai.request(server)
-        .post(`/transactions/${mockUser._id}`)
+        .post(`/transactions/`)
+        .set('authorization', auth)
         .send(transaction)
         .end((err, res) => {
           expect(err).to.be.null()
@@ -92,10 +109,11 @@ describe('Transaction', () => {
         })
     })
   })
-  describe('/GET /transactions/user/:userId', () => {
+  describe('/GET /transactions/all', () => {
     it('it should find a collection of transactions from a specific user', (done) => {
       chai.request(server)
-        .get(`/transactions/user/${mockUser._id}`)
+        .get(`/transactions/all/`)
+        .set('authorization', auth)
         .end((err, res) => {
           expect(err).to.be.null()
           expect(res).to.have.status(200)
@@ -109,6 +127,7 @@ describe('Transaction', () => {
     it('it should find a specific transaction', (done) => {
       chai.request(server)
         .get(`/transactions/${createdTransaction._id}`)
+        .set('authorization', auth)
         .end((err, res) => {
           expect(err).to.be.null()
           expect(res).to.have.status(200)
@@ -120,6 +139,7 @@ describe('Transaction', () => {
     it('it should fail to find a transaction that does not exists on the database', (done) => {
       chai.request(server)
         .get(`/transactions/${mongoose.Types.ObjectId()}`)
+        .set('authorization', auth)
         .end((err, res) => {
           expect(err).to.be.null()
           expect(res).to.have.status(404)
@@ -131,6 +151,7 @@ describe('Transaction', () => {
     it('it should fail to find a transaction if ObjectId is invalid', (done) => {
       chai.request(server)
         .get('/transactions/invalidObjectId')
+        .set('authorization', auth)
         .end((err, res) => {
           expect(err).to.be.null()
           expect(res).to.have.status(400)
@@ -143,6 +164,7 @@ describe('Transaction', () => {
     it('it should patch a specific transaction', (done) => {
       chai.request(server)
         .patch(`/transactions/${createdTransaction._id}`)
+        .set('authorization', auth)
         .send({ description: 'Updated transaction' })
         .end((err, res) => {
           expect(err).to.be.null()
@@ -155,6 +177,7 @@ describe('Transaction', () => {
     it('it should fail to patch a transaction that does not exists on the database', (done) => {
       chai.request(server)
         .patch(`/transactions/${mongoose.Types.ObjectId()}`)
+        .set('authorization', auth)
         .send({ description: 'Updated transaction' })
         .end((err, res) => {
           expect(err).to.be.null()
@@ -167,6 +190,7 @@ describe('Transaction', () => {
     it('it should fail to patch a transaction if there are no properties on the request', (done) => {
       chai.request(server)
         .patch(`/transactions/${createdTransaction._id}`)
+        .set('authorization', auth)
         .send({})
         .end((err, res) => {
           expect(err).to.be.null()
@@ -178,6 +202,7 @@ describe('Transaction', () => {
     it('it should fail to patch a transaction if there are unknow properties on the request', (done) => {
       chai.request(server)
         .patch(`/transactions/${createdTransaction._id}`)
+        .set('authorization', auth)
         .send({ malicious_property: 'hackerman' })
         .end((err, res) => {
           expect(err).to.be.null()
@@ -189,6 +214,7 @@ describe('Transaction', () => {
     it('it should fail to patch if ObjectId is invalid', (done) => {
       chai.request(server)
         .patch('/transactions/invalidObjectId')
+        .set('authorization', auth)
         .send({ description: 'Updated transaction' })
         .end((err, res) => {
           expect(err).to.be.null()
@@ -203,6 +229,7 @@ describe('Transaction', () => {
       transaction.date = '99/99/9999'
       chai.request(server)
         .patch(`/transactions/${createdTransaction._id}`)
+        .set('authorization', auth)
         .send(transaction)
         .end((err, res) => {
           expect(err).to.be.null()
@@ -216,6 +243,7 @@ describe('Transaction', () => {
     it('it should delete a transaction from the database', (done) => {
       chai.request(server)
         .delete(`/transactions/${createdTransaction._id}`)
+        .set('authorization', auth)
         .end((err, res) => {
           expect(err).to.be.null()
           expect(res).to.have.status(200)
@@ -227,6 +255,7 @@ describe('Transaction', () => {
     it('it should fail to delete a transaction that does not exists on the database', (done) => {
       chai.request(server)
         .delete(`/transactions/${mongoose.Types.ObjectId()}`)
+        .set('authorization', auth)
         .end((err, res) => {
           expect(err).to.be.null()
           expect(res).to.have.status(404)
@@ -238,6 +267,7 @@ describe('Transaction', () => {
     it('it should fail to delete if ObjectId is invalid', (done) => {
       chai.request(server)
         .delete('/transactions/invalidObjectId')
+        .set('authorization', auth)
         .end((err, res) => {
           expect(err).to.be.null()
           expect(res).to.have.status(400)
