@@ -102,7 +102,7 @@ const readOne = async (request, response) => {
 }
 // READ ALL TRANSACTIONS OF A SPECIFIC USER
 const readAll = async (request, response) => {
-    const dbTransaction = await Transaction.find(utils.createTransactionQuery(request.params, request.owner))
+    const dbTransaction = await Transaction.find(utils.createTransactionQuery(request.query, request.owner))
 
     const data = {
       count: dbTransaction.length,
@@ -168,7 +168,9 @@ const update = async (request, response) => {
       return response.status(400).json({ error: true, message: 'Invalid date provided' })
     }
 
-    request.body.date = parsedDate
+    if(parsedDate !== undefined){
+      request.body.date = parsedDate
+    }
 
     const dbTransaction = await Transaction.findByIdAndUpdate(id, request.body)
 
