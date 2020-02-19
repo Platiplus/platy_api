@@ -26,7 +26,7 @@ app.use(cors())
 
 // DB CONNECTION
 const db = new Database()
-db.connect(process.env.DB_TEST_DATABASE)
+db.connect()
 
 // ROUTES
 app.use('/users', userRoutes)
