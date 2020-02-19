@@ -4,10 +4,8 @@ require('dotenv').config()
 const http = require('http')
 const app = require('./app')
 
-const environment = require('./config/server-config').development
-
 // PORT SELECTION
-const port = environment.port
+const port = process.env.PORT
 
 // SERVER CREATION
 const server = http.createServer(app)
