@@ -40,6 +40,10 @@ const transactionSchema = mongoose.Schema(
     owner: {
       type: mongoose.Schema.Types.ObjectId,
       required: true
+    },
+    account: {
+      type: mongoose.Schema.Types.ObjectId,
+      required: true
     }
   }
 )

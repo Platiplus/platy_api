@@ -8,7 +8,7 @@ const Transaction = require('../models/transaction-model')
 
 // CREATE A NEW TRANSACTION
 const create = async (request, response) => {
-    const { type, date, description, target, value, category, status, quotas } = request.body
+    const { type, date, description, target, value, category, status, quotas, account } = request.body
     const owner = request.owner
 
     const parsedDate = utils.normalizeDate(date)
@@ -27,7 +27,8 @@ const create = async (request, response) => {
       category,
       status,
       quotas,
-      owner: mongoose.Types.ObjectId(owner)
+      owner: mongoose.Types.ObjectId(owner),
+      account: mongoose.Types.ObjectId(account)
     })
 
     const createdTransaction = await transaction.save()
@@ -45,6 +46,7 @@ const create = async (request, response) => {
         status: createdTransaction.status,
         quotas: createdTransaction.quotas,
         owner: createdTransaction.owner,
+        account: createdTransaction.account,
         requests: [
           {
             type: 'GET',
@@ -84,6 +86,7 @@ const readOne = async (request, response) => {
         status: dbTransaction.status,
         quotas: dbTransaction.quotas,
         owner: dbTransaction.owner,
+        account: dbTransaction.account,
         requests: [
           {
             type: 'PATCH',
@@ -118,6 +121,7 @@ const readAll = async (request, response) => {
           status: transaction.status,
           quotas: transaction.quotas,
           owner: transaction.owner,
+          account: transaction.account,
           requests: [
             {
               type: 'GET',
@@ -190,6 +194,7 @@ const update = async (request, response) => {
         status: dbTransaction.status,
         quotas: dbTransaction.quotas,
         owner: dbTransaction.owner,
+        account: dbTransaction.account,
         requests: [
           {
             type: 'GET',

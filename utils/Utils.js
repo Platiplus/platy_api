@@ -51,6 +51,10 @@ class Utils {
     if ('dateEnd' in params) {
       query.date.$lt = params.dateEnd
     }
+
+    if ('account' in params) {
+      query.account = params.account
+    }
     
     return query
   }

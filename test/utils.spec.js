@@ -21,6 +21,7 @@ describe('Utils', () => {
         quotas: 'QuotaId',
         dateStart: '2020-02-06',
         dateEnd: '2020-02-29',
+        account: '5dd0707ce84e9d15fb892fdd',
     }
       const query = util.createTransactionQuery(params)
 
@@ -36,6 +37,7 @@ describe('Utils', () => {
       expect(params).property('dateEnd').to.not.equal(undefined)
       expect(query).property('date').to.have.property('$gt')
       expect(query).property('date').to.have.property('$lt')
+      expect(query).to.have.property('account')
       done()
     })
   })
