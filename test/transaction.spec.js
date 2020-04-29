@@ -21,7 +21,7 @@ chai.use(dirtyChai)
 
 // USER RELATED TESTS
 describe('Transaction', () => {
-  let mockUser = {
+  const mockUser = {
     _id: mongoose.Types.ObjectId(),
     username: casual.username,
     email: casual.email,
@@ -48,25 +48,25 @@ describe('Transaction', () => {
     const db = new Database()
     await db.connect()
     await User.deleteMany({})
-    const postUser = Object.fromEntries(Object.entries(mockUser));
-    delete postUser._id;
+    const postUser = Object.fromEntries(Object.entries(mockUser))
+    delete postUser._id
 
     await chai.request(server)
       .post('/users/')
-      .send(postUser);
+      .send(postUser)
 
-    auth = await axios.post(`${process.env.AUTH_URL}/signin`, 
-        { 
-          email: mockUser.email,
-          password: mockUser.password
-        })
-    auth = `Bearer ${ auth.data }`
+    auth = await axios.post(`${process.env.AUTH_URL}/signin`,
+      {
+        email: mockUser.email,
+        password: mockUser.password
+      })
+    auth = `Bearer ${auth.data.token}`
   })
 
   describe('/POST /transactions/', () => {
     it('it should create a transaction', (done) => {
       chai.request(server)
-        .post(`/transactions/`)
+        .post('/transactions/')
         .set('authorization', auth)
         .send(mockTransaction)
         .end((err, res) => {
@@ -84,7 +84,7 @@ describe('Transaction', () => {
       let transaction = Object.fromEntries(entries)
       transaction = util.chaoticInputGenerator(transaction)
       chai.request(server)
-        .post(`/transactions/`)
+        .post('/transactions/')
         .set('authorization', auth)
         .send(transaction)
         .end((err, res) => {
@@ -99,7 +99,7 @@ describe('Transaction', () => {
       const transaction = Object.fromEntries(entries)
       transaction.date = '99/99/9999'
       chai.request(server)
-        .post(`/transactions/`)
+        .post('/transactions/')
         .set('authorization', auth)
         .send(transaction)
         .end((err, res) => {
@@ -113,7 +113,7 @@ describe('Transaction', () => {
   describe('/GET /transactions/all', () => {
     it('it should find a collection of transactions from a specific user', (done) => {
       chai.request(server)
-        .get(`/transactions/all/`)
+        .get('/transactions/all/')
         .set('authorization', auth)
         .end((err, res) => {
           expect(err).to.be.null()

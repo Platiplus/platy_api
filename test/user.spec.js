@@ -4,7 +4,6 @@ require('dotenv').config()
 const Database = require('../utils/Database')
 const Utils = require('../utils/Utils')
 const User = require('../api/models/user-model')
-const mongoose = require('mongoose')
 
 // DEV DEPENDENCIES
 const casual = require('casual')
@@ -41,12 +40,12 @@ describe('User', () => {
         .post('/users/')
         .send(mockUser)
         .end(async (err, res) => {
-          auth = await axios.post(`${process.env.AUTH_URL}/signin`, 
-            { 
+          auth = await axios.post(`${process.env.AUTH_URL}/signin`,
+            {
               email: mockUser.email,
               password: mockUser.password
             })
-          auth = `Bearer ${ auth.data }`
+          auth = `Bearer ${auth.data.token}`
           expect(err).to.be.null()
           expect(res).to.have.status(201)
           expect(res.body).to.be.a('object')
@@ -100,7 +99,7 @@ describe('User', () => {
   describe('/GET /users/', () => {
     it('it should find a specific user', (done) => {
       chai.request(server)
-        .get(`/users/`)
+        .get('/users/')
         .set('authorization', auth)
         .end((err, res) => {
           expect(err).to.be.null()
@@ -114,7 +113,7 @@ describe('User', () => {
   describe('/PATCH /user/', () => {
     it('it should patch a specific user', (done) => {
       chai.request(server)
-        .patch(`/users/`)
+        .patch('/users/')
         .set('authorization', auth)
         .send({ username: 'test' })
         .end((err, res) => {
@@ -127,7 +126,7 @@ describe('User', () => {
     })
     it('it should fail to patch an user if there are no properties on the request', (done) => {
       chai.request(server)
-        .patch(`/users/`)
+        .patch('/users/')
         .set('authorization', auth)
         .send({})
         .end((err, res) => {
@@ -139,7 +138,7 @@ describe('User', () => {
     })
     it('it should fail to patch an user if there are unknow properties on the request', (done) => {
       chai.request(server)
-        .patch(`/users/`)
+        .patch('/users/')
         .set('authorization', auth)
         .send({ malicious_property: 'hackerman' })
         .end((err, res) => {
@@ -153,7 +152,7 @@ describe('User', () => {
   describe('/DELETE /user/', () => {
     it('it should delete an user from the database', (done) => {
       chai.request(server)
-        .delete(`/users/`)
+        .delete('/users/')
         .set('authorization', auth)
         .end((err, res) => {
           expect(err).to.be.null()

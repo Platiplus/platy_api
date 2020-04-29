@@ -14,7 +14,7 @@ const expect = chai.expect
 const dirtyChai = require('dirty-chai')
 const chaiHttp = require('chai-http')
 const server = require('../app')
-let auth;
+let auth
 
 // MIDDLEWARES
 chai.use(chaiHttp)
@@ -22,7 +22,7 @@ chai.use(dirtyChai)
 
 // ACCOUNT RELATED TESTS
 describe('Account', () => {
-  let mockUser = {
+  const mockUser = {
     _id: mongoose.Types.ObjectId(),
     username: casual.username,
     email: casual.email,
@@ -41,25 +41,25 @@ describe('Account', () => {
     const db = new Database()
     await db.connect()
     await User.deleteMany({})
-    const postUser = Object.fromEntries(Object.entries(mockUser));
-    delete postUser._id;
+    const postUser = Object.fromEntries(Object.entries(mockUser))
+    delete postUser._id
 
     await chai.request(server)
       .post('/users/')
-      .send(postUser);
+      .send(postUser)
 
-    auth = await axios.post(`${process.env.AUTH_URL}/signin`, 
-        { 
-          email: mockUser.email,
-          password: mockUser.password
-        })
-    auth = `Bearer ${ auth.data }`
+    auth = await axios.post(`${process.env.AUTH_URL}/signin`,
+      {
+        email: mockUser.email,
+        password: mockUser.password
+      })
+    auth = `Bearer ${auth.data.token}`
   })
 
   describe('/POST /accounts/', () => {
     it('it should create an account', (done) => {
       chai.request(server)
-        .post(`/accounts/`)
+        .post('/accounts/')
         .set('authorization', auth)
         .send(mockAccount)
         .end((err, res) => {
@@ -77,7 +77,7 @@ describe('Account', () => {
       let account = Object.fromEntries(entries)
       account = util.chaoticInputGenerator(account)
       chai.request(server)
-        .post(`/accounts/`)
+        .post('/accounts/')
         .set('authorization', auth)
         .send(account)
         .end((err, res) => {
@@ -92,7 +92,7 @@ describe('Account', () => {
       const account = Object.fromEntries(entries)
       account.balance = 'x98sh'
       chai.request(server)
-        .post(`/accounts/`)
+        .post('/accounts/')
         .set('authorization', auth)
         .send(account)
         .end((err, res) => {
@@ -106,7 +106,7 @@ describe('Account', () => {
   describe('/GET /accounts/user/:userId', () => {
     it('it should find a collection of accounts from a specific user', (done) => {
       chai.request(server)
-        .get(`/accounts/all`)
+        .get('/accounts/all')
         .set('authorization', auth)
         .end((err, res) => {
           expect(err).to.be.null()

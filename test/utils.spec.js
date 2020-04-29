@@ -3,7 +3,7 @@ require('dotenv').config()
 
 // UTILS AND MODELS
 const Utils = require('../utils/Utils')
-const util = new Utils();
+const util = new Utils()
 
 // DEV DEPENDENCIES
 const chai = require('chai')
@@ -21,8 +21,8 @@ describe('Utils', () => {
         quotas: 'QuotaId',
         dateStart: '2020-02-06',
         dateEnd: '2020-02-29',
-        account: '5dd0707ce84e9d15fb892fdd',
-    }
+        account: '5dd0707ce84e9d15fb892fdd'
+      }
       const query = util.createTransactionQuery(params)
 
       expect(query).to.be.an('object')
