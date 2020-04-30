@@ -195,7 +195,7 @@ describe('User', () => {
   })
   describe('/PATCH /user/', () => {
     describe('User does not exists', () => {
-      it('it should patch a specific user', (done) => {
+      it('it should fail to patch an user that does not exists on the database', (done) => {
         chai.request(server)
           .patch('/users/')
           .set('authorization', auth)
