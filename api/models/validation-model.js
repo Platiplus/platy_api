@@ -19,7 +19,7 @@ const schemas = {
   },
   transactionCreateModel: {
     body: Joi.object().keys({
-      type: Joi.number().min(0).max(2),
+      type: Joi.number().min(0).max(2).required(),
       date: Joi.string().regex(/^\d{2}([./-])\d{2}\1\d{4}$/).required(),
       description: Joi.string().required(),
       target: Joi.string().required(),
@@ -63,9 +63,32 @@ const schemas = {
       account: Joi.string().regex(/^[0-9a-fA-F]{24}$/)
     })
   },
+  transactionUpdateManyModel: {
+    params: Joi.object().keys({
+      id: Joi.string().regex(/^[0-9a-fA-F]{24}$/).required()
+    }),
+    body: Joi.object().min(2).keys({
+      type: Joi.number().min(0).max(2),
+      description: Joi.string(),
+      target: Joi.string(),
+      value: Joi.number(),
+      category: Joi.string(),
+      status: Joi.boolean(),
+      quotas: Joi.string().required(),
+      account: Joi.string().regex(/^[0-9a-fA-F]{24}$/)
+    })
+  },
   transactionDeleteModel: {
     params: Joi.object().keys({
       id: Joi.string().regex(/^[0-9a-fA-F]{24}$/).required()
+    })
+  },
+  transactionDeleteManyModel: {
+    params: Joi.object().keys({
+      id: Joi.string().regex(/^[0-9a-fA-F]{24}$/).required()
+    }),
+    body: Joi.object().min(1).max(1).keys({
+      quotas: Joi.string().required()
     })
   },
   accountCreateModel: {

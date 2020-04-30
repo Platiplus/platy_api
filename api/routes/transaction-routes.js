@@ -12,4 +12,8 @@ router.get('/:id', celebrate(model.transactionReadOneModel), verify, controller.
 router.patch('/:id', celebrate(model.transactionUpdateModel), verify, controller.update)
 router.delete('/:id', celebrate(model.transactionDeleteModel), verify, controller.remove)
 
+router.post('/many/', celebrate(model.transactionCreateModel), verify, setOwner, controller.createMany)
+router.patch('/many/:id', celebrate(model.transactionUpdateManyModel), verify, setOwner, controller.updateMany)
+router.delete('/many/:id', celebrate(model.transactionDeleteManyModel), verify, setOwner, controller.deleteMany)
+
 module.exports = router

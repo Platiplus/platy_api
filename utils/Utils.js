@@ -15,6 +15,14 @@ class Utils {
     return undefined
   }
 
+  normalizeDateOffset (date, offset) {
+    const parsedDate = moment(date, 'DD/MM/YYYY').add(offset, 'months')
+    if (parsedDate.isValid()) {
+      return parsedDate.format('YYYY-MM-DD')
+    }
+    return undefined
+  }
+
   createTransactionQuery (params, owner) {
     const query = {}
 
@@ -40,7 +48,7 @@ class Utils {
       query.quotas = params.quotas
     }
 
-    if('dateStart' in params || 'dateEnd' in params){
+    if ('dateStart' in params || 'dateEnd' in params) {
       query.date = {}
     }
 
@@ -55,7 +63,7 @@ class Utils {
     if ('account' in params) {
       query.account = params.account
     }
-    
+
     return query
   }
 }

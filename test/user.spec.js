@@ -97,17 +97,19 @@ describe('User', () => {
     })
   })
   describe('/GET /users/', () => {
-    it('it should find a specific user', (done) => {
-      chai.request(server)
-        .get('/users/')
-        .set('authorization', auth)
-        .end((err, res) => {
-          expect(err).to.be.null()
-          expect(res).to.have.status(200)
-          expect(res.body).to.be.a('object')
-          expect(res.body.user).to.be.an('object')
-          done()
-        })
+    describe('User Exists', () => {
+      it('it should find a specific user', (done) => {
+        chai.request(server)
+          .get('/users/')
+          .set('authorization', auth)
+          .end((err, res) => {
+            expect(err).to.be.null()
+            expect(res).to.have.status(200)
+            expect(res.body).to.be.a('object')
+            expect(res.body.user).to.be.an('object')
+            done()
+          })
+      })
     })
   })
   describe('/PATCH /user/', () => {
@@ -161,6 +163,34 @@ describe('User', () => {
           expect(res.body).to.have.property('message').equal('User deleted successfully')
           done()
         })
+    })
+    it('it should fail to delete an user that does not exists on the database', (done) => {
+      chai.request(server)
+        .delete('/users/')
+        .set('authorization', auth)
+        .end((err, res) => {
+          expect(err).to.be.null()
+          expect(res).to.have.status(404)
+          expect(res.body).to.be.a('object')
+          expect(res.body).to.have.property('message').equal('User not found on database')
+          done()
+        })
+    })
+  })
+  describe('/GET /users/', () => {
+    describe('User does not exists', () => {
+      it('it should find a specific user', (done) => {
+        chai.request(server)
+          .get('/users/')
+          .set('authorization', auth)
+          .end((err, res) => {
+            expect(err).to.be.null()
+            expect(res).to.have.status(404)
+            expect(res.body).to.be.a('object')
+            expect(res.body).to.have.property('message').equal('User not found on database')
+            done()
+          })
+      })
     })
   })
 })

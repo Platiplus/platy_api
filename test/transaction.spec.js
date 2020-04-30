@@ -37,12 +37,13 @@ describe('Transaction', () => {
     value: Math.random() * (500 - 1) + 1,
     category: casual.word,
     status: casual.boolean,
-    quotas: 'null',
+    quotas: '3',
     account: '5dd0707ce84e9d15fb892fdd'
   }
 
   let createdTransaction
   let auth
+  let quotasTransaction
 
   before(async () => {
     const db = new Database()
@@ -70,7 +71,7 @@ describe('Transaction', () => {
         .set('authorization', auth)
         .send(mockTransaction)
         .end((err, res) => {
-          createdTransaction = res.body.createdTransaction
+          createdTransaction = res.body.transactions[0]
           expect(err).to.be.null()
           expect(res).to.have.status(201)
           expect(res.body).to.be.a('object')
@@ -133,7 +134,7 @@ describe('Transaction', () => {
           expect(err).to.be.null()
           expect(res).to.have.status(200)
           expect(res.body).to.be.a('object')
-          expect(res.body.transaction).to.be.an('object')
+          expect(res.body.transactions).to.be.an('array')
           done()
         })
     })
@@ -171,7 +172,7 @@ describe('Transaction', () => {
           expect(err).to.be.null()
           expect(res).to.have.status(200)
           expect(res.body).to.be.a('object')
-          expect(res.body.transaction).to.be.an('object')
+          expect(res.body.transactions).to.be.an('array')
           done()
         })
     })
@@ -275,6 +276,180 @@ describe('Transaction', () => {
           expect(res.error).not.to.be.null()
           done()
         })
+    })
+  })
+  describe('/BULK EDITING METHODS', () => {
+    describe('/POST /transactions/many', () => {
+      it('it should create many transactions on the database', (done) => {
+        chai.request(server)
+          .post('/transactions/many')
+          .set('authorization', auth)
+          .send(mockTransaction)
+          .end((err, res) => {
+            quotasTransaction = {
+              _id: res.body.transactions[0]._id,
+              quotas: res.body.transactions[0].quotas
+            }
+            expect(err).to.be.null()
+            expect(res).to.have.status(201)
+            expect(res.body).to.be.a('object')
+            expect(res.body).to.have.property('message').equal('Transactions created successfully')
+            expect(res.body).to.have.property('count').equal(3)
+            done()
+          })
+      })
+      it('it should fail to create when input with missing properties is provided', (done) => {
+        const util = new Utils()
+        const entries = Object.entries(mockTransaction)
+        let transaction = Object.fromEntries(entries)
+        transaction = util.chaoticInputGenerator(transaction)
+        chai.request(server)
+          .post('/transactions/many')
+          .set('authorization', auth)
+          .send(transaction)
+          .end((err, res) => {
+            expect(err).to.be.null()
+            expect(res).to.have.status(400)
+            expect(res.error).not.to.be.null()
+            done()
+          })
+      })
+      it('it should fail to create when date is invalid, even in valid formatting', (done) => {
+        const entries = Object.entries(mockTransaction)
+        const transaction = Object.fromEntries(entries)
+        transaction.date = '99/99/9999'
+        chai.request(server)
+          .post('/transactions/many')
+          .set('authorization', auth)
+          .send(transaction)
+          .end((err, res) => {
+            expect(err).to.be.null()
+            expect(res).to.have.status(400)
+            expect(res.error).not.to.be.null()
+            done()
+          })
+      })
+      it('it should fail to create when quotas are invalid', (done) => {
+        const entries = Object.entries(mockTransaction)
+        const transaction = Object.fromEntries(entries)
+        transaction.quotas = 'a'
+        chai.request(server)
+          .post('/transactions/many')
+          .set('authorization', auth)
+          .send(transaction)
+          .end((err, res) => {
+            expect(err).to.be.null()
+            expect(res).to.have.status(400)
+            expect(res.error).not.to.be.null()
+            done()
+          })
+      })
+    })
+    describe('/PATCH /transactions/many/:id', () => {
+      it('it should patch many transactions on the database', (done) => {
+        chai.request(server)
+          .patch(`/transactions/many/${quotasTransaction._id}`)
+          .set('authorization', auth)
+          .send({ quotas: quotasTransaction.quotas, description: 'Updated transaction' })
+          .end((err, res) => {
+            expect(err).to.be.null()
+            expect(res).to.have.status(200)
+            expect(res.body).to.be.a('object')
+            expect(res.body).to.have.property('message').equal('Transactions updated successfully')
+            expect(res.body).to.have.property('count').equal(3)
+            done()
+          })
+      })
+      it('it should fail to patch transactions that do not exist on the database', (done) => {
+        chai.request(server)
+          .patch(`/transactions/many/${mongoose.Types.ObjectId()}`)
+          .set('authorization', auth)
+          .send({ quotas: quotasTransaction.quotas, description: 'Updated transaction' })
+          .end((err, res) => {
+            expect(err).to.be.null()
+            expect(res).to.have.status(404)
+            expect(res.body).to.be.a('object')
+            expect(res.body).to.have.property('message').equal('Transactions not found on database')
+            done()
+          })
+      })
+      it('it should fail to patch transactions if there are no properties on the request', (done) => {
+        chai.request(server)
+          .patch(`/transactions/many/${quotasTransaction._id}`)
+          .set('authorization', auth)
+          .send({})
+          .end((err, res) => {
+            expect(err).to.be.null()
+            expect(res).to.have.status(400)
+            expect(res.error).not.to.be.null()
+            done()
+          })
+      })
+      it('it should fail to patch transactions if there are unknow properties on the request', (done) => {
+        chai.request(server)
+          .patch(`/transactions/many/${quotasTransaction._id}`)
+          .set('authorization', auth)
+          .send({ malicious_property: 'hackerman' })
+          .end((err, res) => {
+            expect(err).to.be.null()
+            expect(res).to.have.status(400)
+            expect(res.error).not.to.be.null()
+            done()
+          })
+      })
+      it('it should fail to patch transactions if ObjectId is invalid', (done) => {
+        chai.request(server)
+          .patch('/transactions/many/invalidObjectId')
+          .set('authorization', auth)
+          .send({ description: 'Updated transaction' })
+          .end((err, res) => {
+            expect(err).to.be.null()
+            expect(res).to.have.status(400)
+            expect(res.error).not.to.be.null()
+            done()
+          })
+      })
+    })
+    describe('/DELETE /transactions/many/:id', () => {
+      it('it should create many transactions on the database', (done) => {
+        chai.request(server)
+          .delete(`/transactions/many/${quotasTransaction._id}`)
+          .set('authorization', auth)
+          .send({ quotas: quotasTransaction.quotas })
+          .end((err, res) => {
+            expect(err).to.be.null()
+            expect(res).to.have.status(200)
+            expect(res.body).to.be.a('object')
+            expect(res.body).to.have.property('message').equal('Transactions deleted successfully')
+            expect(res.body).to.have.property('count').equal(3)
+            done()
+          })
+      })
+      it('it should fail to delete transactions that do not exist on the database', (done) => {
+        chai.request(server)
+          .delete(`/transactions/many/${mongoose.Types.ObjectId()}`)
+          .set('authorization', auth)
+          .send({ quotas: quotasTransaction.quotas })
+          .end((err, res) => {
+            expect(err).to.be.null()
+            expect(res).to.have.status(404)
+            expect(res.body).to.be.a('object')
+            expect(res.body).to.have.property('message').equal('Transactions not found on database')
+            done()
+          })
+      })
+      it('it should fail to delete if ObjectId is invalid', (done) => {
+        chai.request(server)
+          .delete('/transactions/invalidObjectId')
+          .set('authorization', auth)
+          .send({ quotas: quotasTransaction.quotas })
+          .end((err, res) => {
+            expect(err).to.be.null()
+            expect(res).to.have.status(400)
+            expect(res.error).not.to.be.null()
+            done()
+          })
+      })
     })
   })
 })
