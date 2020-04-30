@@ -163,11 +163,24 @@ describe('Transaction', () => {
     })
   })
   describe('/PATCH /transactions/:id', () => {
-    it('it should patch a specific transaction', (done) => {
+    it('it should patch any properties of a specific transaction', (done) => {
       chai.request(server)
         .patch(`/transactions/${createdTransaction._id}`)
         .set('authorization', auth)
         .send({ description: 'Updated transaction' })
+        .end((err, res) => {
+          expect(err).to.be.null()
+          expect(res).to.have.status(200)
+          expect(res.body).to.be.a('object')
+          expect(res.body.transactions).to.be.an('array')
+          done()
+        })
+    })
+    it('it should patch the date of a specific transaction', (done) => {
+      chai.request(server)
+        .patch(`/transactions/${createdTransaction._id}`)
+        .set('authorization', auth)
+        .send({ date: '30/04/2020' })
         .end((err, res) => {
           expect(err).to.be.null()
           expect(res).to.have.status(200)

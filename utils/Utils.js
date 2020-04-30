@@ -17,10 +17,7 @@ class Utils {
 
   normalizeDateOffset (date, offset) {
     const parsedDate = moment(date, 'DD/MM/YYYY').add(offset, 'months')
-    if (parsedDate.isValid()) {
-      return parsedDate.format('YYYY-MM-DD')
-    }
-    return undefined
+    return parsedDate.format('YYYY-MM-DD')
   }
 
   createTransactionQuery (params, owner) {

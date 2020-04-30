@@ -193,4 +193,21 @@ describe('User', () => {
       })
     })
   })
+  describe('/PATCH /user/', () => {
+    describe('User does not exists', () => {
+      it('it should patch a specific user', (done) => {
+        chai.request(server)
+          .patch('/users/')
+          .set('authorization', auth)
+          .send({ username: 'test' })
+          .end((err, res) => {
+            expect(err).to.be.null()
+            expect(res).to.have.status(404)
+            expect(res.body).to.be.a('object')
+            expect(res.body).to.have.property('message').equal('User not found on database')
+            done()
+          })
+      })
+    })
+  })
 })
