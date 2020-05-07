@@ -20,7 +20,8 @@ const create = async (request, response) => {
 
   const data = {
     message: 'Account created succesfully!',
-    createdAccount: {
+    count: 1,
+    accounts: [{
       _id: createdAccount._id,
       description: createdAccount.description,
       balance: createdAccount.balance,
@@ -40,7 +41,7 @@ const create = async (request, response) => {
           url: `${process.env.API_URL}/accounts/${createdAccount._id}`
         }
       ]
-    }
+    }]
   }
   response.status(201).json(data)
 }
@@ -54,7 +55,9 @@ const readOne = async (request, response) => {
   }
 
   const data = {
-    account: {
+    message: 'OK',
+    count: 1,
+    accounts: [{
       _id: dbAccount._id,
       description: dbAccount.description,
       balance: dbAccount.balance,
@@ -70,7 +73,7 @@ const readOne = async (request, response) => {
           url: `${process.env.API_URL}/accounts/${dbAccount._id}`
         }
       ]
-    }
+    }]
   }
   response.status(200).json(data)
 }
@@ -80,6 +83,7 @@ const readAll = async (request, response) => {
   const dbAccount = await Account.find({ owner: request.owner })
 
   const data = {
+    message: 'OK',
     count: dbAccount.length,
     accounts: dbAccount.map((account) => {
       return {
@@ -119,6 +123,8 @@ const remove = async (request, response) => {
 
   const data = {
     message: 'Account deleted successfully',
+    count: 1,
+    accounts: [],
     requests: [
       {
         type: 'POST',
@@ -141,7 +147,9 @@ const update = async (request, response) => {
   }
 
   const data = {
-    account: {
+    message: 'Account updated successfully',
+    count: 1,
+    accounts: [{
       _id: dbAccount._id,
       description: dbAccount.description,
       balance: dbAccount.balance,
@@ -156,7 +164,7 @@ const update = async (request, response) => {
           url: `${process.env.API_URL}/accounts/${dbAccount._id}`
         }
       ]
-    }
+    }]
   }
 
   response.status(200).json(data)

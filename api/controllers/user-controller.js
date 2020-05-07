@@ -28,7 +28,8 @@ const create = async (request, response) => {
 
     const data = {
       message: 'User created succesfully!',
-      createdUser: {
+      count: 1,
+      users: [{
         _id: createdUser._id,
         username: createdUser.username,
         email: createdUser.email,
@@ -48,7 +49,7 @@ const create = async (request, response) => {
             url: `${process.env.API_URL}/users/${createdUser._id}`
           }
         ]
-      }
+      }]
     }
     response.status(201).json(data)
   } else {
@@ -64,7 +65,9 @@ const readOne = async (request, response) => {
   }
 
   const data = {
-    user: {
+    message: 'OK',
+    count: 1,
+    users: [{
       _id: dbUser._id,
       username: dbUser.username,
       email: dbUser.email,
@@ -80,7 +83,7 @@ const readOne = async (request, response) => {
           url: `${process.env.API_URL}/users/${dbUser._id}`
         }
       ]
-    }
+    }]
   }
 
   response.status(200).json(data)
@@ -90,6 +93,7 @@ const readAll = async (request, response) => {
   const dbUser = await User.find({})
 
   const data = {
+    message: 'OK',
     count: dbUser.length,
     users: dbUser.map((user) => {
       return {
@@ -128,6 +132,8 @@ const remove = async (request, response) => {
 
   const data = {
     message: 'User deleted successfully',
+    count: 1,
+    users: [],
     requests: [
       {
         type: 'POST',
@@ -149,7 +155,9 @@ const update = async (request, response) => {
   }
 
   const data = {
-    user: {
+    message: 'User updated successfully',
+    count: 1,
+    users: [{
       _id: dbUser._id,
       username: dbUser.username,
       email: dbUser.email,
@@ -164,7 +172,7 @@ const update = async (request, response) => {
           url: `${process.env.API_URL}/users/${dbUser._id}`
         }
       ]
-    }
+    }]
   }
 
   response.status(200).json(data)

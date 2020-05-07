@@ -63,7 +63,7 @@ describe('Account', () => {
         .set('authorization', auth)
         .send(mockAccount)
         .end((err, res) => {
-          createdAccount = res.body.createdAccount
+          createdAccount = res.body.accounts[0]
           expect(err).to.be.null()
           expect(res).to.have.status(201)
           expect(res.body).to.be.a('object')
@@ -126,7 +126,7 @@ describe('Account', () => {
           expect(err).to.be.null()
           expect(res).to.have.status(200)
           expect(res.body).to.be.a('object')
-          expect(res.body.account).to.be.an('object')
+          expect(res.body.accounts).to.be.an('array')
           done()
         })
     })
@@ -164,7 +164,7 @@ describe('Account', () => {
           expect(err).to.be.null()
           expect(res).to.have.status(200)
           expect(res.body).to.be.a('object')
-          expect(res.body.account).to.be.an('object')
+          expect(res.body.accounts).to.be.an('array')
           done()
         })
     })
