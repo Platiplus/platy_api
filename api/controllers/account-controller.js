@@ -6,8 +6,7 @@ const Account = require('../models/account-model')
 
 // CREATE A NEW ACCOUNT
 const create = async (request, response) => {
-  const { description, balance } = request.body
-  const owner = request.owner
+  const { description, balance, owner } = request.body
 
   const account = new Account({
     _id: mongoose.Types.ObjectId(),

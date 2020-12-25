@@ -6,7 +6,7 @@ const model = require('../models/validation-model')
 const setOwner = require('../middlewares/set_owner.dev')
 const verify = require('../middlewares/verify_token.dev')
 
-router.post('/', celebrate(model.accountCreateModel), verify, setOwner, controller.create)
+router.post('/', celebrate(model.accountCreateModel), controller.create)
 router.get('/all', verify, setOwner, controller.readAll)
 router.get('/:id', celebrate(model.accountReadOneModel), verify, controller.readOne)
 router.patch('/:id', celebrate(model.accountUpdateModel), verify, controller.update)

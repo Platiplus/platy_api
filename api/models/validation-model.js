@@ -94,7 +94,8 @@ const schemas = {
   accountCreateModel: {
     body: Joi.object().keys({
       description: Joi.string().required(),
-      balance: Joi.number().required()
+      balance: Joi.number().required(),
+      owner: Joi.string().regex(/^[0-9a-fA-F]{24}$/).required()
     })
   },
   accountReadOneModel: {
